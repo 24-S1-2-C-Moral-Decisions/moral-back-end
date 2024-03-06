@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+
+# Nest.js
+dist/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+out/
+
+# Testing
+coverage/
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
