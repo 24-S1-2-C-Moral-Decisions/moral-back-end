@@ -9,7 +9,7 @@
 ```bash
 cd backend
 # macOS
-docker run -it --rm -v '${pwd}':/backend -w /backend -p 5000:5000 node:20.11-slim /bin/bash
+docker run -it --rm -v 'path/to/backend/dir':/backend -w /backend -p 5000:5000 node:20.11-slim /bin/bash
 # windows
 docker run -it --rm -v "path/to/backend/dir":/backend -w /backend -p 5000:5000 node:20.11-slim /bin/bash
 # inside docker container
