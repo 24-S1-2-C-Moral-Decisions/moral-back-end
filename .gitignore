@@ -3,7 +3,6 @@ node_modules/
 
 # Nest.js
 dist/
-.env
 
 # IDE
 .vscode/
