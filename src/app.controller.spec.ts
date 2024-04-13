@@ -15,8 +15,8 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return "This is back end of Moral Decisions."', () => {
+      expect(appController.getHello()).toBe('This is back end of Moral Decisions.');
     });
   });
 });

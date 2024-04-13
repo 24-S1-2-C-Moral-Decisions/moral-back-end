@@ -24,6 +24,7 @@ npm run start:dev
 
 ```bash
 $ npm install
+$ npm install @nestjs/cli -g
 ```
 
 ### Running the app
@@ -37,6 +38,18 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+### Create new controller
+
+```bash
+$ nest g controller controller/<controller-name>
+```
+
+### Create new module
+
+```bash
+$ nest g module module/<module-name>
 ```
 
 ### Test
