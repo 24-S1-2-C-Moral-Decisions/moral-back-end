@@ -1,4 +1,4 @@
-import { Controller, Get, Query, ParseIntPipe, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { SurveyTypeDto } from '../../DTO/surveyType.dto';
 
 @Controller('survey')
