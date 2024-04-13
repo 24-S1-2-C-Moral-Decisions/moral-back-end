@@ -1,11 +1,11 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { SurveyTypeDto } from '../../DTO/surveyType.dto';
+import { Controller, Get, Query } from '@nestjs/common';
+import { SurveyTypeDto } from '../../module/survey/surveyType.dto';
 
 @Controller('survey')
 export class SurveyController {
 
     @Get('surveyId')
-    getSurveyId(@Param() param: SurveyTypeDto) {
-        return param.surveyType;
+    getSurveyId(@Query() query: SurveyTypeDto) {
+        return query;
     }
 }

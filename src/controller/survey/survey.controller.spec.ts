@@ -17,7 +17,7 @@ describe('SurveyController', () => {
   });
 
   it('should return a Survey Id', () => {
-    expect(typeof controller.getSurveyId({ surveyType:1 })).toBe('number');
+    expect(typeof controller.getSurveyId({ surveyType:1 })).toBe('object');
   });
 
   // out of range

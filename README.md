@@ -46,6 +46,12 @@ $ npm run start:prod
 $ nest g controller controller/<controller-name>
 ```
 
+### Create new module
+
+```bash
+$ nest g module module/<module-name>
+```
+
 ### Test
 
 ```bash
