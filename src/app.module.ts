@@ -9,7 +9,7 @@ if (!process.env.NODE_ENV) {
   process.exit(1);
 }
 
-let envFilePath = '.env/.'+process.env.NODE_ENV+'.env';
+const envFilePath = '.env/.'+process.env.NODE_ENV+'.env';
 Logger.log('Loading environment variables from: ' + envFilePath, 'Environment');
 
 @Module({
