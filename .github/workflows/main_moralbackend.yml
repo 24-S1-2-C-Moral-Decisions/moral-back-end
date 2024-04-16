@@ -57,6 +57,5 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'MoralBackend'
-          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9B84C4FE5E99463B89E9B54620E6FDB8 }}
           package: .
