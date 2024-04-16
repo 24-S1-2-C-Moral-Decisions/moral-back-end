@@ -1,10 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe, BadRequestException, HttpStatus } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    exceptionFactory: (errors) => {
+      const msg = Object.values(errors[0].constraints)[0];
+      return new BadRequestException({
+         msg: msg,
+         status: HttpStatus.BAD_REQUEST
+      })
+    }
+  }));
 
   if (process.env.NODE_ENV === 'development') {
       const config = new DocumentBuilder()
@@ -17,7 +28,7 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
-  await app.listen(5000, () => {
+  await app.listen(process.env.SERVER_PORT, () => {
     // console.log(`Server running on http://localhost:${process.env.SERVER_PORT}`);
     Logger.log('Server running on http://localhost:' + process.env.SERVER_PORT, 'Bootstrap');
   });

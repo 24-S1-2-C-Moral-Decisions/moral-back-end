@@ -9,9 +9,9 @@
 ```bash
 cd backend
 # macOS
-docker run -it --rm -v './':/backend -w /backend -p 5000:5000 node:20.11-slim /bin/bash
+docker run -it --rm -v './':/backend -w /backend -p 5001:5001 node:20.11-slim /bin/bash
 # windows
-docker run -it --rm -v "path/to/backend/dir":/backend -w /backend -p 5000:5000 node:20.11-slim /bin/bash
+docker run -it --rm -v "path/to/backend/dir":/backend -w /backend -p 5001:5001 node:20.11-slim /bin/bash
 # inside docker container
 # install dependencies (only need to run once)
 npm install
@@ -24,6 +24,7 @@ npm run start:dev
 
 ```bash
 $ npm install
+$ npm install @nestjs/cli -g
 ```
 
 ### Running the app
@@ -37,6 +38,18 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+### Create new controller
+
+```bash
+$ nest g controller controller/<controller-name>
+```
+
+### Create new module
+
+```bash
+$ nest g module module/<module-name>
 ```
 
 ### Test
