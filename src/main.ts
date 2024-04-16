@@ -28,9 +28,9 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
   }
 
-  await app.listen(process.env.SERVER_PORT, () => {
-    // console.log(`Server running on http://localhost:${process.env.SERVER_PORT}`);
-    Logger.log('Server running on http://localhost:' + process.env.SERVER_PORT, 'Bootstrap');
+  await app.listen(process.env.PORT, () => {
+    // console.log(`Server running on http://localhost:${process.env.PORT}`);
+    Logger.log('Server running on http://localhost:' + process.env.PORT, 'Bootstrap');
   });
 }
 bootstrap();
