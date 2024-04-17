@@ -16,29 +16,30 @@ describe('SurveyController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should return a Survey Id', () => {
-    expect(typeof controller.getSurveyId({ surveyType:1 })).toBe('object');
+  it('should return a question', () => {
+    expect(typeof controller.getQuestion({ studyId:"1" })).toBe({
+      id: "1",
+      title: "Survey Title 1",
+      text: "Survey Question 1"
+    });
   });
 
-  // out of range
-  it('should return error msg "surveyType must not be greater than 3"', () => {
+  // no studyId
+  it('should return error msg "studyId should not be empty"', () => {
     try {
-      controller.getSurveyId({ surveyType:4 });
+      controller.getQuestion({ studyId:null });
     }
     catch (e) {
       expect(e.response.status).toBe(400);
-      expect(e.response.msg).toBe('surveyType must not be greater than 3');
+      expect(e.response.msg).toBe('studyId should not be empty');
     }
-  });
 
-  // empty
-  it('should return error msg "surveyType should not be empty"', () => {
     try {
-      controller.getSurveyId({ surveyType:null });
+      controller.getQuestion({ studyId:undefined });
     }
     catch (e) {
       expect(e.response.status).toBe(400);
-      expect(e.response.msg).toBe('surveyType should not be empty');
+      expect(e.response.msg).toBe('studyId should not be empty');
     }
   });
 });
