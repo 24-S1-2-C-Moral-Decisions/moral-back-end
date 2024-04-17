@@ -8,6 +8,7 @@ import * as fs from 'fs';
 
 const envFilePath = '.env/.'+(process.env.NODE_ENV ? process.env.NODE_ENV : 'development')+'.env';
 if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
   Logger.warn('NODE_ENV is not defined, it should be set to development or production', 'Environment');
 }
 
