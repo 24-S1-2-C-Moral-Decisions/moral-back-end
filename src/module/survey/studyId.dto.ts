@@ -10,5 +10,5 @@ export class StudyIdDto {
         // enum: [1, 2, 3, 4]
     })
     @IsNotEmpty()
-    surveyType: string;
+    studyId: string;
 }
