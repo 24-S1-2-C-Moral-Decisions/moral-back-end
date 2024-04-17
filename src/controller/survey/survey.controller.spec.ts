@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
+import { QuestionDto } from '../../module/survey/question.dto';
 
 describe('SurveyController', () => {
   let controller: SurveyController;
@@ -17,11 +18,12 @@ describe('SurveyController', () => {
   });
 
   it('should return a question', () => {
-    expect(typeof controller.getQuestion({ studyId:"1" })).toBe({
-      id: "1",
-      title: "Survey Title 1",
-      text: "Survey Question 1"
-    });
+    expect(controller.getQuestion({ studyId:"1" })).toEqual(new QuestionDto({
+        id: "1",
+        title: "Survey Title 1",
+        text: "Survey Question 1"
+      }
+    ));
   });
 
   // no studyId

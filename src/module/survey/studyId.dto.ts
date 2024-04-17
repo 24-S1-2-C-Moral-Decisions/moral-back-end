@@ -4,6 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class StudyIdDto {
 
+    constructor(studyId: string) {
+        this.studyId = studyId;
+    }
+
     @ApiProperty({
         description: 'The study id',
         required: true,

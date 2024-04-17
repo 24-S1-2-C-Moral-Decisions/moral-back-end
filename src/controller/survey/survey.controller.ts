@@ -1,14 +1,16 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AnswersDto } from 'src/module/survey/answers.dto';
-import { StudyIdDto } from 'src/module/survey/studyId.dto';
+import { StudyIdDto } from '../../module/survey/studyId.dto';
+import { AnswersDto } from '../../module/survey/answers.dto';
+import { QuestionDto } from '../../module/survey/question.dto';
+
 
 @Controller('survey')
 @ApiTags('survey')
 export class SurveyController {
 
     @Get('questions')
-    getQuestion(@Query() param : StudyIdDto) {
+    getQuestion(@Query() studyId: StudyIdDto) {
         /**
          * {
          *   id: "survey-id-1",
@@ -16,11 +18,11 @@ export class SurveyController {
          *   text: "Survey Question 1"
          * }
          */
-        return {
-            id: param.studyId,
+        return new QuestionDto({
+            id: studyId.studyId,
             title: "Survey Title 1",
             text: "Survey Question 1"
-        }
+        });
     }
 
     @Post('answers')
