@@ -1,13 +1,10 @@
 
 export class QuestionDto {
-    /**
-     * {
-     *   id: "survey-id-1",
-     *   title: "Survey Title 1",
-     *   text: "Survey Question 1"
-     * }
-     */
-
+    constructor(question: QuestionDto) {
+        this.id = question.id;
+        this.title = question.title;
+        this.text = question.text;
+    }
     id: string;
     title: string;
     text: string;
