@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { SurveyController } from './controller/survey/survey.controller';
+import { MongooseModule } from '@nestjs/mongoose';
 import * as fs from 'fs';
 
 const envFilePath = '.env/.'+(process.env.NODE_ENV ? process.env.NODE_ENV : 'development')+'.env';
@@ -22,7 +23,8 @@ if (!fs.existsSync(envFilePath)) {
   imports: [ConfigModule.forRoot({
     isGlobal: true,
     envFilePath,
-  })],
+  }),
+  MongooseModule.forRoot('mongodb://115.146.86.210:27017/testdb')],
   controllers: [AppController, SurveyController],
   providers: [AppService],
 })
