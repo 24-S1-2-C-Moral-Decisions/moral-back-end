@@ -2,7 +2,7 @@
 import { IsBoolean, IsNotEmpty, IsNumber, Max, Min} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-class IndevidualAnswerDto {
+class IndividualAnswerDto {
     @ApiProperty({
         description: 'Whether user think it is an asshole or not',
         required: true,
@@ -24,7 +24,7 @@ class IndevidualAnswerDto {
     rating: number;
 }
 
-class GroupAnswerDto extends IndevidualAnswerDto { }
+class GroupAnswerDto extends IndividualAnswerDto { }
 
 class AnswerDto {
     
@@ -41,14 +41,14 @@ class AnswerDto {
         required: true,
     })
     @IsNotEmpty()
-    indevidualAnswer: IndevidualAnswerDto;
+    individualAnswer: IndividualAnswerDto;
 
     @ApiProperty({
         description: 'The group answer',
         required: true,
     })
     @IsNotEmpty()
-    geoupAnswer: GroupAnswerDto;
+    groupAnswer: GroupAnswerDto;
 
     @ApiProperty({
         description: 'The comments of the user',

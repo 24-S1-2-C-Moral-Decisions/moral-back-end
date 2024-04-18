@@ -6,6 +6,9 @@ import { Logger } from '@nestjs/common';
 import { SurveyController } from './controller/survey/survey.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as fs from 'fs';
+import { SurveyService } from './service/survey.service';
+import { Question, QuestionSchema } from './schemas/question.schemas';
+import { Answer, AnswerSchema, Answers, AnswersSchema, IndividualAnswer, IndividualAnswerSchema } from './schemas/answers.shcemas';
 
 const envFilePath = '.env/.'+(process.env.NODE_ENV ? process.env.NODE_ENV : 'development')+'.env';
 if (!process.env.NODE_ENV) {
@@ -25,8 +28,13 @@ if (!fs.existsSync(envFilePath)) {
     isGlobal: true,
     envFilePath,
   }),
-  MongooseModule.forRoot('mongodb://115.146.86.210:27017/testdb')],
+  MongooseModule.forRoot('mongodb://115.146.86.210:27017/testdb'),
+  MongooseModule.forFeature([
+    { name: Question.name, schema: QuestionSchema },
+    { name: IndividualAnswer.name, schema: IndividualAnswerSchema },
+    { name: Answer.name, schema: AnswerSchema },
+    { name: Answers.name, schema: AnswersSchema }])],
   controllers: [AppController, SurveyController],
-  providers: [AppService],
+  providers: [AppService,SurveyService],
 })
 export class AppModule {}

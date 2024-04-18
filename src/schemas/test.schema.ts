@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
+
 export type TestTypeDocument = HydratedDocument<TestType>;
 
 @Schema()
@@ -9,7 +10,7 @@ export class TestType {
   id: string;
 
   @Prop()
-  name: number;
+  name: string;
 
   @Prop()
   updatedAt: string;
