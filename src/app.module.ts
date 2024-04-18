@@ -28,7 +28,7 @@ if (!fs.existsSync(envFilePath)) {
     isGlobal: true,
     envFilePath,
   }),
-  MongooseModule.forRoot('mongodb://115.146.86.210:27017/testdb'),
+  MongooseModule.forRoot(process.env.DATABASE_CONN_STRING),
   MongooseModule.forFeature([
     { name: Question.name, schema: QuestionSchema },
     { name: IndividualAnswer.name, schema: IndividualAnswerSchema },
