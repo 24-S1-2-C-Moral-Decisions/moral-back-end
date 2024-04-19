@@ -23,10 +23,24 @@ if (!fs.existsSync(envFilePath)) {
   Logger.error('Environment file not found: ' + envFilePath, '', 'Environment');
 }
 
+// check database configuration
+// configuration will be stored in the ./env/.database.env file by default
+if (!fs.existsSync('.env/.database.env')) {
+  Logger.warn('Database configuration file not found: .env/.database.env', '', 'Environment');
+  // check whether the DATABASE_CONN_STRING is defined
+  if (!process.env.DATABASE_CONN_STRING) {
+    Logger.error('DATABASE_CONN_STRING is not defined', '', 'Environment');
+    process.exit(1);
+  }
+}
+else {
+  Logger.log('Database configuration file found: .env/.database.env', 'Environment');
+}
+
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
-    envFilePath,
+    envFilePath : [envFilePath, '.env/.database.env'],
   }),
   MongooseModule.forRoot(process.env.DATABASE_CONN_STRING),
   MongooseModule.forFeature([

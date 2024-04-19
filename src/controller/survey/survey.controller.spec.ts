@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { QuestionDto } from '../../module/survey/question.dto';
+import { SurveyService } from '../../service/survey.service';
 
 describe('SurveyController', () => {
   let controller: SurveyController;
@@ -8,6 +9,7 @@ describe('SurveyController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SurveyController],
+      providers: [SurveyService],
     }).compile();
 
     controller = module.get<SurveyController>(SurveyController);
@@ -21,7 +23,9 @@ describe('SurveyController', () => {
     expect(controller.getQuestion({ studyId:"1" })).toEqual(new QuestionDto({
         id: "1",
         title: "Survey Title 1",
-        text: "Survey Question 1"
+        text: "Survey Question 1",
+        count: 3,
+        studyId: "1"
       }
     ));
   });
