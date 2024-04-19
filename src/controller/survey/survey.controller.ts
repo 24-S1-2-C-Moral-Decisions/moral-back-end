@@ -21,8 +21,7 @@ export class SurveyController {
          *   studyId
          * }
          */
-
-        return this.surveyService.findQuestions(studyId);
+        return this.surveyService.findQuestions(studyId)
     }
     
     @Post('answers')

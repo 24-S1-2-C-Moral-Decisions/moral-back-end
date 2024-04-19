@@ -1,18 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
-import { QuestionDto } from '../../module/survey/question.dto';
 import { SurveyService } from '../../service/survey.service';
+import { Question } from '../../schemas/question.schemas';
+import { StudyIdDto } from '../../module/survey/studyId.dto';
 
+jest.mock('../../service/survey.service');
 describe('SurveyController', () => {
   let controller: SurveyController;
+  let service: SurveyService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SurveyController],
-      providers: [SurveyService],
+      providers: [SurveyService]
     }).compile();
 
     controller = module.get<SurveyController>(SurveyController);
+
+    service = module.get<SurveyService>(SurveyService);
+    jest.spyOn(service, 'findQuestions').mockImplementation((dto: StudyIdDto) => { return Question.mockQuestions(dto, 3);});
   });
 
   it('should be defined', () => {
@@ -20,14 +26,8 @@ describe('SurveyController', () => {
   });
 
   it('should return a question', () => {
-    expect(controller.getQuestion({ studyId:"1" })).toEqual(new QuestionDto({
-        id: "1",
-        title: "Survey Title 1",
-        text: "Survey Question 1",
-        count: 3,
-        studyId: "1"
-      }
-    ));
+    const expectData = Question.mockQuestions({ studyId:"1" }, 3);
+    expect(controller.getQuestion({ studyId:"1" })).toEqual(expectData);
   });
 
   // no studyId
