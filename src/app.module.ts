@@ -26,7 +26,7 @@ if (!fs.existsSync(envFilePath)) {
 // check database configuration
 // configuration will be stored in the ./env/.database.env file by default
 if (!fs.existsSync('.env/.database.env')) {
-  Logger.warn('Database configuration file not found: .env/.database.env', '', 'Environment');
+  Logger.warn('Database configuration file not found: .env/.database.env', 'Environment');
   // check whether the DATABASE_CONN_STRING is defined
   if (!process.env.DATABASE_CONN_STRING) {
     Logger.error('DATABASE_CONN_STRING is not defined', '', 'Environment');
