@@ -18,11 +18,21 @@ export class SurveyController {
          *   text: "Survey Question 1"
          * }
          */
-        return new QuestionDto({
-            id: studyId.studyId,
+        return [new QuestionDto({
+            id: "xxxxx",
             title: "Survey Title 1",
-            text: "Survey Question 1"
-        });
+            selftext: "Survey Question 1"
+        }),
+        new QuestionDto({
+            id: "xxxxe",
+            title: "Survey Title 2",
+            selftext: "Survey Question 2"
+        }),
+        new QuestionDto({
+            id: "xxxxr",
+            title: "Survey Title 3",
+            selftext: "Survey Question 3"
+        })];
     }
 
     @Post('answers')
