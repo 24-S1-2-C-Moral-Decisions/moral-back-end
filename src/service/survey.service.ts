@@ -13,21 +13,28 @@ export class SurveyService {
         @InjectModel(Answers.name) private answersModel: Model<Answers>
     ) { }
 
-    async findQuestions(studyId:StudyIdDto){
-        const questions=await this.questionModel.find({studyId:studyId.studyId}).sort({count:1}).limit(3);
-        await Promise.all(
-            questions.map(async (question) => {
-              question.count += 1;
-              await question.save();
-              return question;  
-            })
-          );
-        return questions;
+    async findQuestion(studyId: StudyIdDto) {
+        // uncertainty
+        if (studyId.studyId === "2") {
+            const question = await this.questionModel.findOne().sort({ "count.2": 1 }).limit(1);
+            question.count[2] += 1;
+            await question.save();
+            const {_id,title,selftext,YA_group,NA_group,YA_percentage,NA_percentage,very_certain_YA,very_certain_NA}=question;
+            return {_id,title,selftext,YA_group,NA_group,YA_percentage,NA_percentage,very_certain_YA,very_certain_NA};
+        } else {
+            // others
+        }
+
     }
 
-    async createAnswers(answers:AnswersDto):Promise<Answers>{
-        const createAnswers=new this.answersModel(answers);
+    async createAnswers(answers: AnswersDto): Promise<Answers> {
+        const createAnswers = new this.answersModel(answers);
         return createAnswers.save();
+    }
+
+    async initCount() {
+        await this.questionModel.updateMany({}, { $set: { count: [0, 0, 0, 0, 0] } });
+        return null;
     }
 
 }

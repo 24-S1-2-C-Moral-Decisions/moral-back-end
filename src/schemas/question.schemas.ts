@@ -4,22 +4,49 @@ import { HydratedDocument } from 'mongoose';
 
 export type QuestionDocument = HydratedDocument<Question>;
 
-@Schema({ collection: 'questions' })
+@Schema({ collection: 'posts' })
 export class Question {
   @Prop()
   _id: string;
 
   @Prop()
-  studyId: string;
-
-  @Prop()
   title: string;
 
   @Prop()
-  text: string;
+  selftext: string;
 
   @Prop()
-  count: number;
+  annotated_top_judgments: number;
+
+  @Prop()
+  YA_group:number;
+
+  @Prop()
+  NA_group:number;
+
+  @Prop()
+  very_certain_YA:number;
+
+  @Prop()
+  very_certain_NA:number;
+
+  @Prop()
+  YA_percentage:number;
+
+  @Prop()
+  NA_percentage:number;
+
+  @Prop()
+  sorted_topic_pair:string;
+
+  @Prop()
+  original_post_YA_top_reasonings:string[];
+
+  @Prop()
+  original_post_NA_top_reasonings:string[];
+
+  @Prop()
+  count: number[];
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
