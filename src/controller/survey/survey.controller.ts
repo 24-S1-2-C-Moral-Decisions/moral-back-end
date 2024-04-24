@@ -18,6 +18,7 @@ export class SurveyController {
          *   text: "Survey Question 1"
          * }
          */
+        studyId.studyId = "0";
         return [new QuestionDto({
             id: "xxxxx",
             title: "Survey Title 1",
