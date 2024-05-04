@@ -14,22 +14,18 @@ export class SurveyService {
     ) { }
 
     async findQuestion(studyId: StudyIdDto) {
-        // uncertainty
-        if (studyId.studyId === "2") {
-            const question = await this.questionModel.findOne().sort({ "count.2": 1 }).limit(1);
-            question.count[2] += 1;
-            await question.save();
-            const {_id,title,selftext,YA_group,NA_group,YA_percentage,NA_percentage,very_certain_YA,very_certain_NA}=question;
-            return {_id,title,selftext,YA_group,NA_group,YA_percentage,NA_percentage,very_certain_YA,very_certain_NA};
-        } else {
-            // others
-        }
+
+        const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
+        question.count[studyId.studyId] += 1;
+        await question.save();
+        return question;
 
     }
 
     async createAnswers(answers: AnswersDto): Promise<Answers> {
+    
         const createAnswers = new this.answersModel(answers);
-        return createAnswers.save();
+        return await createAnswers.save();
     }
 
     async initCount() {

@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class StudyIdDto {
 
-    constructor(studyId: string) {
+    constructor(studyId: number) {
         this.studyId = studyId;
     }
 
@@ -14,5 +14,5 @@ export class StudyIdDto {
         // enum: [1, 2, 3, 4]
     })
     @IsNotEmpty()
-    studyId: string;
+    studyId: number;
 }

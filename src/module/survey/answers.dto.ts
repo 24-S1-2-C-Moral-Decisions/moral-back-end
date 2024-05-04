@@ -78,9 +78,9 @@ export class AnswersDto {
     studyId: string;
 
     // array of answer
-    @ApiProperty({ type: [AnswerDto] })
+    @ApiProperty({ type: AnswerDto })
     @IsNotEmpty()
-    answers: AnswerDto[];
+    answers: AnswerDto;
 
     @ApiProperty({
         description: 'The comments of the user',
@@ -88,4 +88,5 @@ export class AnswersDto {
         example: 'This is a comment'
     })
     comments: string;
+    time:number;
 }

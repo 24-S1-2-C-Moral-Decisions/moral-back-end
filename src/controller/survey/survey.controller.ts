@@ -25,8 +25,8 @@ export class SurveyController {
         return this.surveyService.findQuestion(studyId);
     }
     
-    @Post('answers')
-    poetAnswers(@Body() body : AnswersDto) {
+    @Post('answer')
+    postAnswers(@Body() body : AnswersDto) {
         this.surveyService.createAnswers(body);
         return "answer saved";
     }
