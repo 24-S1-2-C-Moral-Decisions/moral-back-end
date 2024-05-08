@@ -13,19 +13,11 @@ DATABASE_CONN_STRING=mongodb://127.0.0.1:27017/testdb
 
 1. First, install [docker](https://docs.docker.com/get-docker/)
 
-2. run docker container
+2. build and run docker container
 
 ```bash
-cd backend
-# macOS
-docker run -it --rm -v './':/backend -w /backend -p 5001:5001 node:20.11-slim /bin/bash
-# windows
-docker run -it --rm -v "path/to/backend/dir":/backend -w /backend -p 5001:5001 node:20.11-slim /bin/bash
-# inside docker container
-# install dependencies (only need to run once)
-npm install
-# run server
-npm run start:dev
+docker build --build-arg BACKEND_PORT=3001 -t backend .
+docker run -d -p 3001:3001 -v ./.env/:/app/.env backend
 ```
 ## In Local
 
