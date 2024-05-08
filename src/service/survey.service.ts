@@ -6,8 +6,6 @@ import { Answers } from '../schemas/answers.shcemas';
 import { StudyIdDto } from '../module/survey/studyId.dto';
 import { AnswersDto } from '../module/survey/answers.dto';
 
-
-
 @Injectable()
 export class SurveyService {
     constructor(
@@ -15,21 +13,24 @@ export class SurveyService {
         @InjectModel(Answers.name) private answersModel: Model<Answers>
     ) { }
 
-    async findQuestions(studyId:StudyIdDto){
-        const questions=await this.questionModel.find({studyId:studyId.studyId}).sort({count:1}).limit(3);
-        await Promise.all(
-            questions.map(async (question) => {
-              question.count += 1;
-              await question.save();
-              return question;  
-            })
-          );
-        return questions;
+    async findQuestion(studyId: StudyIdDto) {
+
+        const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
+        question.count[studyId.studyId] += 1;
+        await question.save();
+        return question;
+
     }
 
-    async createAnswers(answers:AnswersDto):Promise<Answers>{
-        const createAnswers=new this.answersModel(answers);
-        return createAnswers.save();
+    async createAnswers(answers: AnswersDto): Promise<Answers> {
+    
+        const createAnswers = new this.answersModel(answers);
+        return await createAnswers.save();
+    }
+
+    async initCount() {
+        await this.questionModel.updateMany({}, { $set: { count: [0, 0, 0, 0, 0] } });
+        return null;
     }
 
 }

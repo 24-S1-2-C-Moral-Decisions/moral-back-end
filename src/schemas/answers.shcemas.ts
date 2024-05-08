@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-
+@Schema()
 export class IndividualAnswer {
   @Prop()
   isAsshole: boolean;
@@ -11,7 +11,7 @@ export class IndividualAnswer {
 }
 export const IndividualAnswerSchema = SchemaFactory.createForClass(IndividualAnswer);
 
-
+@Schema()
 export class Answer {
   @Prop()
   questionId: string;
@@ -37,8 +37,8 @@ export class Answers{
   @Prop()
   studyId: string;
 
-  @Prop({type: [AnswerSchema]})
-  answers: Answer[];
+  @Prop({type: AnswerSchema})
+  answers: Answer;
 
   @Prop()
   comments: string;

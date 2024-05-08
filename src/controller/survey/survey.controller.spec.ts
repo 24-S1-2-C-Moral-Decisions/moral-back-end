@@ -1,24 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
-import { SurveyService } from '../../service/survey.service';
-import { Question } from '../../schemas/question.schemas';
-import { StudyIdDto } from '../../module/survey/studyId.dto';
+import { QuestionDto } from '../../module/survey/question.dto';
 
-jest.mock('../../service/survey.service');
 describe('SurveyController', () => {
   let controller: SurveyController;
-  let service: SurveyService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SurveyController],
-      providers: [SurveyService]
     }).compile();
 
     controller = module.get<SurveyController>(SurveyController);
-
-    service = module.get<SurveyService>(SurveyService);
-    jest.spyOn(service, 'findQuestions').mockImplementation((dto: StudyIdDto) => { return Question.mockQuestions(dto, 3);});
   });
 
   it('should be defined', () => {

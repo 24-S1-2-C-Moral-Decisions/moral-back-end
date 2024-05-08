@@ -23,5 +23,5 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Database
-.env/.database.env
+#env
+.env/

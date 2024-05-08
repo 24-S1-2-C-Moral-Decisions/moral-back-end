@@ -4,40 +4,49 @@ import { HydratedDocument } from 'mongoose';
 
 export type QuestionDocument = HydratedDocument<Question>;
 
-@Schema({ collection: 'questions' })
+@Schema({ collection: 'posts' })
 export class Question {
   @Prop()
   _id: string;
 
   @Prop()
-  studyId: string;
-
-  @Prop()
   title: string;
 
   @Prop()
-  text: string;
+  selftext: string;
 
   @Prop()
-  count: number;
+  annotated_top_judgments: number;
 
-  static async mockQuestion(_id:string , studyId: string){
-    const question = new Question();
-    question._id = _id;
-    question.studyId = studyId;
-    question.title = 'Survey Title';
-    question.text = 'Survey Question';
-    question.count = 0;
-    return question;
-  }
+  @Prop()
+  YA_group:number;
 
-  static async mockQuestions(studyId, number){
-    const questions = [];
-    for (let i = 0; i < number; i++){
-      questions.push(Question.mockQuestion(i.toString(), studyId));
-    }
-    return questions;
-  }
+  @Prop()
+  NA_group:number;
+
+  @Prop()
+  very_certain_YA:number;
+
+  @Prop()
+  very_certain_NA:number;
+
+  @Prop()
+  YA_percentage:number;
+
+  @Prop()
+  NA_percentage:number;
+
+  @Prop()
+  sorted_topic_pair:string;
+
+  @Prop()
+  original_post_YA_top_reasonings:string[];
+
+  @Prop()
+  original_post_NA_top_reasonings:string[];
+
+  @Prop()
+  count: number[];
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
