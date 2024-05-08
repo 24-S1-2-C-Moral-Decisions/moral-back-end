@@ -26,8 +26,22 @@ describe('SurveyController', () => {
   });
 
   it('should return a question', () => {
-    const expectData = Question.mockQuestions({ studyId:"1" }, 3);
-    expect(controller.getQuestion({ studyId:"1" })).toEqual(expectData);
+    expect(controller.getQuestion({ studyId:"1" })).toEqual([
+      new QuestionDto({
+        id: "xxxxx",
+        title: "Survey Title 1",
+        selftext: "Survey Question 1"
+      }),
+      new QuestionDto({
+        id: "xxxxe",
+        title: "Survey Title 2",
+        selftext: "Survey Question 2"
+      }),
+      new QuestionDto({
+        id: "xxxxr",
+        title: "Survey Title 3",
+        selftext: "Survey Question 3"
+      })]);
   });
 
   // no studyId
