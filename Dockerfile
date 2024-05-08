@@ -1,12 +1,24 @@
 FROM node:20.11-slim
 
-# set up the working directory
+# Create app directory
 WORKDIR /app
 
-# copy all the files to the container
-COPY ./* /app/
+# copy package.json and package-lock.json
+COPY package*.json ./
+RUN npm install
 
-# install the dependencies
-RUN npm install -g @nestjs/cli && npm install
+# Copy app source code
+COPY . .
+
+# Install app dependencies
 RUN npm run build
-RUN npm run start:prod
+
+# set environment variables
+ARG BACKEND_PORT=3001
+ENV PORT=${BACKEND_PORT}
+
+VOLUME /app/.env
+
+# Expose port and start application
+EXPOSE $PORT
+CMD ["npm", "start"]

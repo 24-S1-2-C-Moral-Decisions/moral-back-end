@@ -20,7 +20,12 @@ Logger.log('Loading environment variables from: ' + envFilePath, 'Environment');
 
 // check if the file exists
 if (!fs.existsSync(envFilePath)) {
-  Logger.error('Environment file not found: ' + envFilePath, '', 'Environment');
+  Logger.warn('Environment file not found: ' + envFilePath, '', 'Environment');
+  // check whether PORT is defined
+  if (!process.env.PORT) {
+    Logger.error('PORT is not defined', 'Environment');
+    process.exit(1);
+  }
 }
 
 // check database configuration
