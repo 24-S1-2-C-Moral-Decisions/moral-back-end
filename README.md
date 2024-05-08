@@ -1,5 +1,14 @@
 # Getting Started
 
+## Database
+Our configuration of database is in `./env/.database.env` file. It will not be set up in this repository. 
+You can create your own database and set up the configuration in the file.
+
+example of `.database.env` file:
+```env
+DATABASE_CONN_STRING=mongodb://127.0.0.1:27017/testdb
+```
+
 ## In Docker
 
 1. First, install [docker](https://docs.docker.com/get-docker/)
