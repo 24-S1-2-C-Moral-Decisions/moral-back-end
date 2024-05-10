@@ -42,6 +42,9 @@ export class Answers{
 
   @Prop()
   comments: string;
+
+  @Prop()
+  time: Date;
 }
 
 export type AnswersDocument = HydratedDocument<Answers>;

@@ -1,12 +1,13 @@
 // more usage, refer to https://github.com/typestack/class-validator?tab=readme-ov-file#usage
-import { IsBoolean, IsNotEmpty, IsNumber, Max, Min} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, Length, Max, Min} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Date } from 'mongoose';
 
 class IndividualAnswerDto {
     @ApiProperty({
         description: 'Whether user think it is an asshole or not',
         required: true,
-        example: 'Whether user think it is an asshole or not'
+        example: true
     })
     @IsNotEmpty()
     @IsBoolean()
@@ -31,9 +32,10 @@ class AnswerDto {
     @ApiProperty({
         description: 'The question id',
         required: true,
-        example: 'question-id-1'
+        example: 'atcfwx'
     })
     @IsNotEmpty()
+    @Length(6,6)
     questionId: string;
 
     @ApiProperty({
@@ -59,7 +61,6 @@ class AnswerDto {
 }
 
 export class AnswersDto {
-
 
     @IsNotEmpty()
     @ApiProperty({
@@ -88,5 +89,12 @@ export class AnswersDto {
         example: 'This is a comment'
     })
     comments: string;
-    time:number;
+
+    @ApiProperty({
+        description: 'The time stamp taken to complete the survey',
+        required: true,
+        example: 123456789
+    })
+    @IsNotEmpty()
+    time:Date;
 }
