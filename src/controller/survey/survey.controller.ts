@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiAcceptedResponse, ApiBadRequestResponse, ApiCreatedResponse, ApiDefaultResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { AnswersDto } from '../../module/survey/answers.dto';
 import { SurveyService } from '../..//service/survey.service';
@@ -12,6 +12,8 @@ export class SurveyController {
     constructor(private surveyService: SurveyService) {}
 
     @Get('question')
+    @ApiOkResponse({ description: 'Return a question' })
+    @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     async getQuestion(@Query() studyId: StudyIdDto): Promise<Question>{
         /**
          * {
@@ -32,6 +34,8 @@ export class SurveyController {
     }
     
     @Post('answer')
+    @ApiCreatedResponse({ description: 'Return a question' })
+    @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     async postAnswers(@Body() body : AnswersDto) {
         return await this.surveyService.createAnswers(body).then(() => {
             return "success";
