@@ -3,17 +3,29 @@ import { HydratedDocument } from 'mongoose';
 
 @Schema()
 export class IndividualAnswer {
-  @Prop()
+  @Prop({
+    required: true,
+    type: Boolean
+  })
   isAsshole: boolean;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: Number,
+    min: 1,
+    max: 5
+  })
   rating: number;
 }
 export const IndividualAnswerSchema = SchemaFactory.createForClass(IndividualAnswer);
 
 @Schema()
 export class Answer {
-  @Prop()
+  @Prop({
+    required: true,
+    type: String,
+    length: 6
+  })
   questionId: string;
 
   @Prop({ type: IndividualAnswerSchema})
@@ -34,14 +46,22 @@ export class Answers{
   @Prop()
   prolificId: string;
 
-  @Prop()
-  studyId: string;
+  @Prop({
+    required: true,
+    type: Number,
+    min: 1,
+    max: 5
+  })
+  studyId: number;
 
   @Prop({type: AnswerSchema})
   answers: Answer;
 
   @Prop()
   comments: string;
+
+  @Prop()
+  time: number;
 }
 
 export type AnswersDocument = HydratedDocument<Answers>;
