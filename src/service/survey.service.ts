@@ -13,24 +13,21 @@ export class SurveyService {
         @InjectModel(Answers.name) private answersModel: Model<Answers>
     ) { }
 
-    async findQuestion(studyId: StudyIdDto) {
-
+    async findQuestion(studyId: StudyIdDto): Promise<Question> {
         const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
         question.count[studyId.studyId] += 1;
         await question.save();
         return question;
-
     }
 
-    async createAnswers(answers: AnswersDto): Promise<Answers> {
-    
-        const createAnswers = new this.answersModel(answers);
-        return await createAnswers.save();
+    async createAnswers(answers: AnswersDto): Promise<string>{
+        await this.answersModel.create(answers);
+        return "success";
     }
 
-    async initCount() {
-        await this.questionModel.updateMany({}, { $set: { count: [0, 0, 0, 0, 0] } });
-        return null;
-    }
+    // async initCount() {
+    //     await this.questionModel.updateMany({}, { $set: { count: [0, 0, 0, 0, 0] } });
+    //     return null;
+    // }
 
 }

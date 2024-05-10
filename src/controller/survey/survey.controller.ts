@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Patch, Post, Query, ValidationError } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { AnswersDto } from '../../module/survey/answers.dto';
 import { SurveyService } from '../..//service/survey.service';
+import { Question } from '../../schemas/question.schemas';
 
 
 @Controller('survey')
@@ -11,7 +12,7 @@ export class SurveyController {
     constructor(private surveyService: SurveyService) {}
 
     @Get('question')
-    async getQuestion(@Query() studyId: StudyIdDto) {
+    async getQuestion(@Query() studyId: StudyIdDto): Promise<Question>{
         /**
          * {
          *   _id: "survey-id-1",

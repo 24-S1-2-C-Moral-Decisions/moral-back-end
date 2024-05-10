@@ -6,65 +6,78 @@ export type QuestionDocument = HydratedDocument<Question>;
 
 @Schema({ collection: 'posts' })
 export class Question {
-  @Prop()
+  @Prop({
+    required: true,
+    type: String,
+    length: 6
+  })
   _id: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: String
+  })
   title: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: String
+  })
   selftext: string;
 
-  @Prop()
-  annotated_top_judgments: number;
+  // @Prop()
+  // annotated_top_judgments: number;
 
-  @Prop()
-  YA_group:number;
+  // @Prop()
+  // YA_group:number;
 
-  @Prop()
-  NA_group:number;
+  // @Prop()
+  // NA_group:number;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: Number
+  })
   very_certain_YA:number;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: Number
+  })
   very_certain_NA:number;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: Number
+  })
   YA_percentage:number;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: Number
+  })
   NA_percentage:number;
 
-  @Prop()
-  sorted_topic_pair:string;
+  // @Prop()
+  // sorted_topic_pair:string;
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: [String]
+  })
   original_post_YA_top_reasonings:string[];
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: [String]
+  })
   original_post_NA_top_reasonings:string[];
 
-  @Prop()
+  @Prop({
+    required: true,
+    type: [Number]
+  })
   count: number[];
-
-  static async mockQuestion(_id:string , studyId: string){
-    const question = new Question();
-    question._id = _id;
-    // question.studyId = studyId;
-    question.title = 'Survey Title';
-    // question.text = 'Survey Question';
-    // question.count = 0;
-    return question;
-  }
-
-  static async mockQuestions(studyId, number){
-    const questions = [];
-    for (let i = 0; i < number; i++){
-      questions.push(Question.mockQuestion(i.toString(), studyId));
-    }
-    return questions;
-  }
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
