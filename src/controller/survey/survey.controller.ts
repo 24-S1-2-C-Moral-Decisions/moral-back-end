@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
-import { ApiAcceptedResponse, ApiBadRequestResponse, ApiCreatedResponse, ApiDefaultResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { AnswersDto } from '../../module/survey/answers.dto';
 import { SurveyService } from '../..//service/survey.service';
