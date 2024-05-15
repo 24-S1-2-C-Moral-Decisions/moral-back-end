@@ -80,7 +80,7 @@ export class AnswersDto {
     // array of answer
     @ApiProperty({ type: AnswerDto })
     @IsNotEmpty()
-    answers: AnswerDto;
+    answer: AnswerDto;
 
     @ApiProperty({
         description: 'The comments of the user',

@@ -31,20 +31,20 @@ const question: Question = {
 const answer = {
   prolificId: "prolific-id-1",
   studyId: 1,
-  answers: {
-    questionId: 'atcfwx',
+  answer: {
+    questionId: "atcfwx",
     individualAnswer: {
       isAsshole: true,
-      rating: 5
+      rating: 1
     },
     groupAnswer: {
       isAsshole: true,
-      rating: 5
+      rating: 1
     },
-    comments: 'This is a comment',
+    comments: "This is a comment"
   },
-  comments: 'This is a comment',
-  time: 123456000123
+  comments: "This is a comment",
+  time: 123456789
 };
 
 describe('SurveyController', () => {

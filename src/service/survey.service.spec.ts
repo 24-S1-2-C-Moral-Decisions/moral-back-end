@@ -29,7 +29,7 @@ const question: Question = {
 const answer = {
   prolificId: "prolific-id-1",
   studyId: 1,
-  answers: {
+  answer: {
     questionId: 'atcfwx',
     individualAnswer: {
       isAsshole: true,

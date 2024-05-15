@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -9,6 +9,10 @@ import * as fs from 'fs';
 import { SurveyService } from './service/survey.service';
 import { Question, QuestionSchema } from './schemas/question.schemas';
 import { Answer, AnswerSchema, Answers, AnswersSchema, IndividualAnswer, IndividualAnswerSchema } from './schemas/answers.shcemas';
+import { RateLimiterMiddleware } from './rate-limiter.middleware';
+import { ProlificService } from './service/prolific/prolific.service';
+import { ProlificController } from './controller/survey/prolific/prolific.controller';
+import { Prolific, ProlificSchema } from './schemas/prolific.shcemas';
 
 const envFilePath = '.env/.'+(process.env.NODE_ENV ? process.env.NODE_ENV : 'development')+'.env';
 if (!process.env.NODE_ENV) {
@@ -52,8 +56,13 @@ else {
     { name: Question.name, schema: QuestionSchema },
     { name: IndividualAnswer.name, schema: IndividualAnswerSchema },
     { name: Answer.name, schema: AnswerSchema },
-    { name: Answers.name, schema: AnswersSchema }])],
-  controllers: [AppController, SurveyController],
-  providers: [AppService,SurveyService],
+    { name: Answers.name, schema: AnswersSchema },
+    { name: Prolific.name, schema: ProlificSchema }])],
+  controllers: [AppController, SurveyController, ProlificController],
+  providers: [AppService,SurveyService, ProlificService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RateLimiterMiddleware).forRoutes('/survey/answer'); // 对所有路由生效
+  }
+}
