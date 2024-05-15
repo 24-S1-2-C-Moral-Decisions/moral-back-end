@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProlificService } from './prolific.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { Prolific } from '../../schemas/prolific.shcemas';
-import { find } from 'rxjs';
 
 describe('ProlificService', () => {
   let service: ProlificService;

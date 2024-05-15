@@ -13,9 +13,9 @@ export class ProlificController {
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to create the prolific, message is stored in message field' })
     async postProlific(@Body() body : ProlificDto) {
         // find the prolific by id
-        var prolific = await this.prolificService.findProlificById(body.id);
+        const prolific = await this.prolificService.findProlificById(body.id);
         if (prolific) {
-            for (var i = 0; i < body.takenBefore.length; i++) {
+            for (let i = 0; i < body.takenBefore.length; i++) {
                 body.takenBefore[i] = body.takenBefore[i] || prolific.takenBefore[i];
             }
         }
