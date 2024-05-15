@@ -38,7 +38,7 @@ export class Answers{
   studyId: string;
 
   @Prop({type: AnswerSchema})
-  answers: Answer;
+  answer: Answer;
 
   @Prop()
   comments: string;
