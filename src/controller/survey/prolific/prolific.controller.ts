@@ -3,12 +3,12 @@ import { ApiBadRequestResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swag
 import { ProlificService } from '../../../service/prolific/prolific.service';
 import { ProlificDto } from '../../../module/survey/prolific.dto';
 
-@Controller('prolific')
+@Controller('survey/prolific')
 @ApiTags('survey')
 export class ProlificController {
     constructor(private prolificService: ProlificService) {}
 
-    @Post('prolific')
+    @Post()
     @ApiCreatedResponse({ description: 'Return created prolific'})
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to create the prolific, message is stored in message field' })
     async postProlific(@Body() body : ProlificDto) {
@@ -28,7 +28,7 @@ export class ProlificController {
         });
     }
 
-    @Get('prolific')
+    @Get()
     @ApiCreatedResponse({ description: 'Return coresponing prolific'})
     async findProlificById(@Query() prolific : ProlificDto) {
         return await this.prolificService.findProlificById(prolific.id).then((res) => {
