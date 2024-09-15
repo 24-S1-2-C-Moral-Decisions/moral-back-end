@@ -1,5 +1,5 @@
 // more usage, refer to https://github.com/typestack/class-validator?tab=readme-ov-file#usage
-import {IsIn, IsInt, IsNotEmpty} from 'class-validator';
+import {IsIn, IsNotEmpty} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import {Type} from "class-transformer";
 
