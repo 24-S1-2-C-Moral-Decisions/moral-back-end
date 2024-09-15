@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query, ValidationPipe} from '@nestjs/common';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { AnswersDto } from '../../module/survey/answers.dto';
@@ -24,6 +24,8 @@ export class SurveyController {
          *   studyId
          * }
          */
+
+        // console.log('Validated studyId:', studyId);
 
         return await this.surveyService.findQuestion(studyId).then((question) => {
             return question;

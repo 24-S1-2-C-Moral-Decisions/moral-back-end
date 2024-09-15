@@ -77,7 +77,7 @@ export class Question {
     required: true,
     type: [Number]
   })
-  count: number[];
+  count: { [key: number]: number }
 }
 
 export const QuestionSchema = SchemaFactory.createForClass(Question);
