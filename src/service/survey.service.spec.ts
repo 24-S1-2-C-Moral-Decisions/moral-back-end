@@ -124,17 +124,17 @@ describe("SurveyService", () => {
     });
 
     it("should throw an error if decisionMaking is undefined", async () => {
-      let data = cloneDeep(answer);
+      const data = cloneDeep(answer);
       await expect(service.createAnswers({ ...data, decisionMaking: undefined })).rejects.toThrow("Decision making results are required");
     });
 
     it("should throw an error if decisionMaking length is not 25", async () => {
-      let data = cloneDeep(answer);
+      const data = cloneDeep(answer);
       await expect(service.createAnswers({ ...data, decisionMaking: [1] })).rejects.toThrow("Decision making array must have 25 items");
     });
 
     it("should throw an error if decisionMaking value is not between 1 and 5", async () => {
-      let data = cloneDeep(answer);
+      const data = cloneDeep(answer);
       data.decisionMaking[0] = 0;
       await expect(service.createAnswers(data)).rejects.toThrow("The value of Decision making question must between [1,5]");
     });
@@ -144,12 +144,12 @@ describe("SurveyService", () => {
     });
 
     it("should throw an error if personalityChoice length is not 15", async () => {
-      let data = cloneDeep(answer);
+      const data = cloneDeep(answer);
       await expect(service.createAnswers({ ...data, personalityChoice: [1] })).rejects.toThrow("Personality choice array must have 15 items");
     });
 
     it("should throw an error if personalityChoice value is not between 1 and 5", async () => {
-      let data = cloneDeep(answer);
+      const data = cloneDeep(answer);
       data.personalityChoice[0] = 0;
       await expect(service.createAnswers(data)).rejects.toThrow("The value of Personality choice question must between [1,5]");
     });
