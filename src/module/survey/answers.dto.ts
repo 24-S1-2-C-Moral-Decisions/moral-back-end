@@ -61,6 +61,13 @@ class AnswerDto {
 
 export class AnswersDto {
 
+    @ApiProperty({
+        description: 'The unique id of the answer',
+        required: false,
+        example: '60f7c72b8f3f5e001f8c84b4'
+    })
+    id: string;
+
     @IsNotEmpty()
     @ApiProperty({
         description: 'The prolific id of the user',

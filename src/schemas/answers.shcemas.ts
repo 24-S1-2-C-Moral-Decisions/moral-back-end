@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 @Schema()
 export class IndividualAnswer {
@@ -42,6 +42,29 @@ export const AnswerSchema = SchemaFactory.createForClass(Answer);
 
 @Schema({ collection: 'answers' })
 export class Answers{
+
+  @Prop({
+    type: Types.ObjectId,
+    default: () => new Types.ObjectId(),
+    unique: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+      }
+    },
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+      }
+    }
+  })
+  _id: Types.ObjectId;
 
   @Prop()
   prolificId: string;
