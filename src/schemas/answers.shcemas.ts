@@ -60,6 +60,12 @@ export class Answers{
   @Prop()
   comments: string;
 
+  @Prop({ type: [Number], required: true })
+  decisionMaking: number[];
+
+  @Prop({ type: [Number], required: true })
+  personalityChoice: number[];
+
   @Prop()
   time: number;
 }
