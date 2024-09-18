@@ -1,6 +1,7 @@
 // more usage, refer to https://github.com/typestack/class-validator?tab=readme-ov-file#usage
-import { IsBoolean, IsNotEmpty, IsNumber, Length, Max, Min} from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, Length, Max, Min} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { StudyIdDto } from './studyId.dto';
 
 class IndividualAnswerDto {
     @ApiProperty({
@@ -59,14 +60,42 @@ class AnswerDto {
     comments: string;
 }
 
-export class AnswersDto {
+export class AnswerIdDto {
+    constructor(id: string) {
+        this.id = id;
+    }
 
     @ApiProperty({
         description: 'The unique id of the answer',
         required: false,
         example: '60f7c72b8f3f5e001f8c84b4'
     })
+    @IsString()
+    @IsNotEmpty()
     id: string;
+
+    toString(): string {
+        return this.id.toString();
+    }
+}
+
+export class AnswersDto {
+    constructor(answers: AnswersDto) {
+        this.id = answers.id;
+        this.prolificId = answers.prolificId;
+        this.studyId = answers.studyId;
+        this.answer = answers.answer;
+        this.comments = answers.comments;
+        this.time = answers.time;
+    }
+
+    @ApiProperty({
+        description: 'The unique id of the answer',
+        required: false,
+        example: '60f7c72b8f3f5e001f8c84b4'
+    })
+    @IsString()
+    id: AnswerIdDto;
 
     @IsNotEmpty()
     @ApiProperty({
@@ -79,10 +108,13 @@ export class AnswersDto {
     @ApiProperty({
         description: 'The study id',
         required: true,
-        example: 1
+        example: 1,
+        type: StudyIdDto
     })
     @IsNotEmpty()
-    studyId: number;
+    studyId: StudyIdDto;
+
+
 
     // array of answer
     @ApiProperty({ type: AnswerDto })
@@ -104,3 +136,4 @@ export class AnswersDto {
     @IsNotEmpty()
     time: number;
 }
+

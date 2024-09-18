@@ -1,81 +1,33 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SurveyService } from "./survey.service";
-import { Question } from "../schemas/question.schemas";
+import { mockQuestion, mockQuestionModel, Question } from "../schemas/question.schemas";
 import { getModelToken } from "@nestjs/mongoose";
-import { Answers } from "../schemas/answers.shcemas";
-
-const question: Question = {
-  _id: "atcfwx",
-  title: "AITA for asking my sister to dye her hair a “normal” color?",
-  selftext:
-    "I’m getting married, beautiful white dress and venue. Expensive photos. Everything I wish for, but...My sister (who is in my bridal party) has BRIGHT blue hair. I don’t want that to be where people’s eyes go when they are at my ceremony nor in all of my photos. I’m spending so much time and money on a beautiful neutral colored ceremony, she would stick out like a rose in a desert. Thanks for your thoughts.",
-  very_certain_YA: 0.853658536585366,
-  very_certain_NA: 0.264705882352941,
-  YA_percentage: 0.55952380952381,
-  NA_percentage: 0.440476190476191,
-  original_post_YA_top_reasonings: [
-    "YAC'mon OP, don't be *that* bride.",
-    "YA. Your sisters hair is part of who she is and asking her to change part of who she is for one day is a dick move. ",
-    "YA. Your sister isn't taking anything away from you by having colorful hair. People aren't going to be so obsessed with the color that they don't see you. ",
-  ],
-  original_post_NA_top_reasonings: [
-    "NA.  Can you have the photos photoshopped instead?  May be easier than this drama.  ",
-    "NA you are not the asshole for asking, as long as you can graciously accept a “no, I don’t want to” as an answer. ",
-    "NA - If you've asked and she said yes, don't feel bad. If you still feel guilty though, maybe offer to pay for her to get her hair done a different color?",
-  ],
-  count: [0, 1, 0, 0, 0]
-};
-
-const answer = {
-  id:"xxx",
-  prolificId: "prolific-id-1",
-  studyId: 1,
-  answer: {
-    questionId: 'atcfwx',
-    individualAnswer: {
-      isAsshole: true,
-      rating: 5
-    },
-    groupAnswer: {
-      isAsshole: true,
-      rating: 5
-    },
-    comments: 'This is a comment',
-  },
-  comments: 'This is a comment',
-  time: 123456000123
-};
+import { Answers, mockAnswer, mockAnswersModel } from "../schemas/answers.shcemas";
 
 describe("SurveyService", () => {
   let service: SurveyService;
+  // let AnsModel: Model<Answers>;
+  // let QuestionModel: Model<Question>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [SurveyService],
+      providers: [
+        SurveyService,
+        {
+          provide: getModelToken(Answers.name),
+          useValue: mockAnswersModel,
+        },
+        {
+          provide: getModelToken(Question.name),
+          useValue: mockQuestionModel,
+        },
+      ],
     })
-      .useMocker((token) => {
-        if (token === getModelToken(Question.name)) {
-          return {
-            findOne: () => {
-              return {
-                sort: () => {
-                  return {
-                    exec: jest.fn().mockResolvedValue({ ...question, save: jest.fn()}),
-                  };
-                },
-              };
-            },
-          };
-        } else if (token === getModelToken(Answers.name)) {
-          return {
-            create: jest.fn(),
-            save: jest.fn(),
-          };
-        }
-      })
       .compile();
 
     service = module.get<SurveyService>(SurveyService);
+    // AnsModel = module.get<Model<Answers>>(getModelToken(Answers.name));
+    // QuestionModel = module.get<Model<Question>>(getModelToken(Question.name));
   });
 
   it("should be defined", () => {
@@ -101,14 +53,31 @@ describe("SurveyService", () => {
         original_post_YA_top_reasonings: result.original_post_YA_top_reasonings,
         original_post_NA_top_reasonings: result.original_post_NA_top_reasonings,
         count: result.count,
-      }).toEqual(question);
+      }).toEqual(mockQuestion);
     });
   });
 
   describe("createAnswers", () => {
     it("should save the answers", async () => {
-      const result = await service.createAnswers(answer);
-      expect(result).toBe("success");
+      const result = await service.createAnswers(mockAnswer);
+      expect(result).toBe(mockAnswer.id.toString());
+    });
+  });
+
+  describe("findAnswersById", () => {
+    it("should return the answers", async () => {
+      const result = await service.findAnswersById(mockAnswer.id);
+      expect(result).toEqual(mockAnswer);
+    });
+
+    it("should return null if the answer is not found", async () => {
+      const result = await service.findAnswersById({ id: "60f7c72b8f3f5e001f8c84b4" });
+      expect(result).toBeNull();
+    });
+
+    it("should return null if id is not correct", async () => {
+      const result = await service.findAnswersById({ id: "xxx" });
+      expect(result).toBeNull();
     });
   });
 });

@@ -1,5 +1,46 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { StudyIdDto } from '../module/survey/studyId.dto';
+import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
+
+export const mockAnswer = new AnswersDto({
+  id: new AnswerIdDto('60f7c72b8f3f5e001f8c84b4'),
+  prolificId: "prolific-id-1",
+  studyId: new StudyIdDto(1),
+  answer: {
+    questionId: "atcfwx",
+    individualAnswer: {
+      isAsshole: true,
+      rating: 1
+    },
+    groupAnswer: {
+      isAsshole: true,
+      rating: 1
+    },
+    comments: "This is a comment"
+  },
+  comments: "This is a comment",
+  time: 123456789
+});
+
+export const mockAnswersModel = {
+  create: () => {
+    return {
+      _id: mockAnswer.id,
+      toString: () => {
+        return mockAnswer.toString();
+      }
+    }
+  },
+  findById: (id: AnswerIdDto) => {
+    return {
+      exec: () => {
+        if (mockAnswer.id == id) return mockAnswer;
+        else return null;
+      }
+    }
+  }
+};
 
 @Schema()
 export class IndividualAnswer {
@@ -64,7 +105,7 @@ export class Answers{
       }
     }
   })
-  _id: Types.ObjectId;
+  id: Types.ObjectId;
 
   @Prop()
   prolificId: string;
