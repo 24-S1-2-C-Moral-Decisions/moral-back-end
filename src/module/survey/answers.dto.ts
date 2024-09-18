@@ -98,6 +98,7 @@ export class AnswersDto {
                   1,2,3,4,5,
                   1,2,3,4,5]
     })
+    @IsNotEmpty()
     decisionMaking: number[];
 
     @ApiProperty({
@@ -107,6 +108,7 @@ export class AnswersDto {
                   1,2,3,4,5,
                   1,2,3,4,5]
     })
+    @IsNotEmpty()
     personalityChoice: number[];
 
     @ApiProperty({
