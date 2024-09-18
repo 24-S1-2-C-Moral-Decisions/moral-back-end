@@ -87,7 +87,7 @@ export class Answers{
     default: () => new Types.ObjectId(),
     unique: true,
     toJSON: {
-      virtuals: true,
+      virtuals: false,
       versionKey: false,
       transform: (doc, ret) => {
         ret.id = ret._id;
@@ -95,7 +95,7 @@ export class Answers{
       }
     },
     toObject: {
-      virtuals: true,
+      virtuals: false,
       versionKey: false,
       transform: (doc, ret) => {
         ret.id = ret._id;
