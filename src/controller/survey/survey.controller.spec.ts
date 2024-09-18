@@ -43,6 +43,18 @@ const answer = {
     },
     comments: "This is a comment"
   },
+  decisionMaking: [
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5
+  ],
+  personalityChoice: [
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5
+  ],
   comments: "This is a comment",
   time: 123456789
 };
