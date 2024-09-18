@@ -17,9 +17,7 @@ export const mockAnswer = new AnswersDto({
       isAsshole: true,
       rating: 1
     },
-    comments: "This is a comment"
   },
-  comments: "This is a comment",
   time: 123456789
 });
 

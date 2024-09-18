@@ -57,7 +57,7 @@ class AnswerDto {
         required: false,
         example: 'This is a comment'
     })
-    comments: string;
+    comments?: string;
 }
 
 export class AnswerIdDto {
@@ -87,6 +87,9 @@ export class AnswersDto {
         this.answer = answers.answer;
         this.comments = answers.comments;
         this.time = answers.time;
+
+        this.changedJudjement = this.answer.individualAnswer.isAsshole === this.answer.groupAnswer.isAsshole;
+        this.changedConfidence = this.answer.individualAnswer.rating === this.answer.groupAnswer.rating;
     }
 
     @ApiProperty({
@@ -95,7 +98,7 @@ export class AnswersDto {
         example: '60f7c72b8f3f5e001f8c84b4'
     })
     @IsString()
-    id: AnswerIdDto;
+    id?: AnswerIdDto;
 
     @IsNotEmpty()
     @ApiProperty({
@@ -114,19 +117,29 @@ export class AnswersDto {
     @IsNotEmpty()
     studyId: StudyIdDto;
 
-
-
     // array of answer
     @ApiProperty({ type: AnswerDto })
     @IsNotEmpty()
     answer: AnswerDto;
 
     @ApiProperty({
+        description: 'Whether the user changed their judgement',
+        required: false,
+    })
+    changedJudjement?: boolean;
+
+    @ApiProperty({
+        description: 'Whether the user changed their confidence',
+        required: false,
+    })
+    changedConfidence?: boolean;
+
+    @ApiProperty({
         description: 'The comments of the user',
         required: false,
         example: 'This is a comment'
     })
-    comments: string;
+    comments?: string;
 
     @ApiProperty({
         description: 'The time stamp taken to complete the survey',
