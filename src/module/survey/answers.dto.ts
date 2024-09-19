@@ -90,6 +90,28 @@ export class AnswersDto {
     comments: string;
 
     @ApiProperty({
+        description: 'List of answers for decision making (25 Items)',
+        required: true,
+        example: [1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5]
+    })
+    @IsNotEmpty()
+    decisionMaking: number[];
+
+    @ApiProperty({
+        description: 'List of answers for decision making (15 Items)',
+        required: true,
+        example: [1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5]
+    })
+    @IsNotEmpty()
+    personalityChoice: number[];
+
+    @ApiProperty({
         description: 'The time stamp taken to complete the survey',
         required: true,
         example: 123456789

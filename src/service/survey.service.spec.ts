@@ -3,6 +3,7 @@ import { SurveyService } from "./survey.service";
 import { Question } from "../schemas/question.schemas";
 import { getModelToken } from "@nestjs/mongoose";
 import { Answers } from "../schemas/answers.shcemas";
+import { cloneDeep } from 'lodash';
 
 const question: Question = {
   _id: "atcfwx",
@@ -41,6 +42,18 @@ const answer = {
     },
     comments: 'This is a comment',
   },
+  decisionMaking: [
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5
+  ],
+  personalityChoice: [
+    1,2,3,4,5,
+    1,2,3,4,5,
+    1,2,3,4,5
+  ],
   comments: 'This is a comment',
   time: 123456000123
 };
@@ -108,6 +121,37 @@ describe("SurveyService", () => {
     it("should save the answers", async () => {
       const result = await service.createAnswers(answer);
       expect(result).toBe("success");
+    });
+
+    it("should throw an error if decisionMaking is undefined", async () => {
+      const data = cloneDeep(answer);
+      await expect(service.createAnswers({ ...data, decisionMaking: undefined })).rejects.toThrow("Decision making results are required");
+    });
+
+    it("should throw an error if decisionMaking length is not 25", async () => {
+      const data = cloneDeep(answer);
+      await expect(service.createAnswers({ ...data, decisionMaking: [1] })).rejects.toThrow("Decision making array must have 25 items");
+    });
+
+    it("should throw an error if decisionMaking value is not between 1 and 5", async () => {
+      const data = cloneDeep(answer);
+      data.decisionMaking[0] = 0;
+      await expect(service.createAnswers(data)).rejects.toThrow("The value of Decision making question must between [1,5]");
+    });
+
+    it("should throw an error if personalityChoice is undefined", async () => {
+      await expect(service.createAnswers({ ...answer, personalityChoice: undefined })).rejects.toThrow("Personality choice results are required");
+    });
+
+    it("should throw an error if personalityChoice length is not 15", async () => {
+      const data = cloneDeep(answer);
+      await expect(service.createAnswers({ ...data, personalityChoice: [1] })).rejects.toThrow("Personality choice array must have 15 items");
+    });
+
+    it("should throw an error if personalityChoice value is not between 1 and 5", async () => {
+      const data = cloneDeep(answer);
+      data.personalityChoice[0] = 0;
+      await expect(service.createAnswers(data)).rejects.toThrow("The value of Personality choice question must between [1,5]");
     });
   });
 });

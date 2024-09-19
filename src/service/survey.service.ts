@@ -21,6 +21,30 @@ export class SurveyService {
     }
 
     async createAnswers(answers: AnswersDto): Promise<string>{
+        if (answers.decisionMaking === undefined) {
+            throw new Error('Decision making results are required');
+        }
+        if (answers.decisionMaking.length !== 25) {
+            throw new Error('Decision making array must have 25 items');
+        }
+        answers.decisionMaking.map((item) => {
+            if (item < 1 || item > 5) {
+                throw new Error('The value of Decision making question must between [1,5]');
+            }
+        });
+
+        if (answers.personalityChoice === undefined) {
+            throw new Error('Personality choice results are required');
+        }
+        if (answers.personalityChoice.length !== 15) {
+            throw new Error('Personality choice array must have 15 items');
+        }
+        answers.personalityChoice.map((item) => {
+            if (item < 1 || item > 5) {
+                throw new Error('The value of Personality choice question must between [1,5]');
+            }
+        });
+
         await this.answersModel.create(answers);
         return "success";
     }
