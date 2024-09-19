@@ -147,21 +147,5 @@ export class AnswersDto {
     })
     @IsNotEmpty()
     time: number;
-
-    @ApiProperty({
-        description: 'Whether the user changed their judgement',
-        required: false,
-    })
-    public get changedJudjement() : boolean {
-        return this.answer.individualAnswer.isAsshole === this.answer.groupAnswer.isAsshole;
-    }
-
-    @ApiProperty({
-        description: 'Whether the user changed their confidence',
-        required: false,
-    })
-    public get changedConfidence() : boolean{
-        return this.answer.individualAnswer.rating === this.answer.groupAnswer.rating;
-    }
 }
 
