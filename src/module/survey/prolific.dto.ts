@@ -1,5 +1,6 @@
 // more usage, refer to https://github.com/typestack/class-validator?tab=readme-ov-file#usage
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
 
 export class ProlificDto {
 
@@ -8,6 +9,7 @@ export class ProlificDto {
         required: true,
         example: 'prolific-Xinlong'
     })
+    @IsNotEmpty()
     id: string;
 
     @ApiProperty({
@@ -15,40 +17,40 @@ export class ProlificDto {
         required: false,
         example: [true, false, false, false, false]
     })
-    takenBefore: boolean[];
+    takenBefore?: boolean[];
 
     @ApiProperty({
         description: 'The country of the user',
         required: false,
         example: 'China'
     })
-    country: string;
+    country?: string;
 
     @ApiProperty({
         description: 'The age of the user',
         required: false,
         example: 20
     })
-    age: number;
+    age?: number;
 
     @ApiProperty({
         description: 'The language of the user',
         required: false,
         example: 'English'
     })
-    language: string;
+    language?: string;
 
     @ApiProperty({
         description: 'Whether user is a frequent user',
         required: false,
         example: true
     })
-    frequentUser: boolean;
+    frequentUser?: boolean;
 
     @ApiProperty({
         description: 'Whether user has visited the subreddit before',
         required: false,
         example: true
     })
-    visitSubreddit: boolean;
+    visitSubreddit?: boolean;
 }
