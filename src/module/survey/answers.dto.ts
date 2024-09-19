@@ -80,20 +80,6 @@ export class AnswerIdDto {
 }
 
 export class AnswersDto {
-    constructor(answers: AnswersDto) {
-        this.id = answers.id;
-        this.prolificId = answers.prolificId;
-        this.studyId = answers.studyId;
-        this.answer = answers.answer;
-        this.comments = answers.comments;
-        this.time = answers.time;
-
-        this.decisionMaking = answers.decisionMaking;
-        this.personalityChoice = answers.personalityChoice;
-
-        this.changedJudjement = this.answer.individualAnswer.isAsshole === this.answer.groupAnswer.isAsshole;
-        this.changedConfidence = this.answer.individualAnswer.rating === this.answer.groupAnswer.rating;
-    }
 
     @ApiProperty({
         description: 'The unique id of the answer',
@@ -124,18 +110,6 @@ export class AnswersDto {
     @ApiProperty({ type: AnswerDto })
     @IsNotEmpty()
     answer: AnswerDto;
-
-    @ApiProperty({
-        description: 'Whether the user changed their judgement',
-        required: false,
-    })
-    changedJudjement?: boolean;
-
-    @ApiProperty({
-        description: 'Whether the user changed their confidence',
-        required: false,
-    })
-    changedConfidence?: boolean;
 
     @ApiProperty({
         description: 'The comments of the user',

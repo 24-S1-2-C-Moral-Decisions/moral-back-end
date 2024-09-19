@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { StudyIdDto } from '../module/survey/studyId.dto';
-import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
+import { AnswerIdDto } from '../module/survey/answers.dto';
 
-export const mockAnswer = new AnswersDto({
+export const mockAnswer = {
   id: new AnswerIdDto('60f7c72b8f3f5e001f8c84b4'),
   prolificId: "prolific-id-1",
   studyId: new StudyIdDto(1),
@@ -31,7 +31,7 @@ export const mockAnswer = new AnswersDto({
     1, 2, 3, 4, 5
   ],
   time: 123456789
-});
+};
 
 export const mockAnswersModel = {
   create: () => {
