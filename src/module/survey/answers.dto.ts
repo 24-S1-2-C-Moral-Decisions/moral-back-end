@@ -88,6 +88,9 @@ export class AnswersDto {
         this.comments = answers.comments;
         this.time = answers.time;
 
+        this.decisionMaking = answers.decisionMaking;
+        this.personalityChoice = answers.personalityChoice;
+
         this.changedJudjement = this.answer.individualAnswer.isAsshole === this.answer.groupAnswer.isAsshole;
         this.changedConfidence = this.answer.individualAnswer.rating === this.answer.groupAnswer.rating;
     }
@@ -140,6 +143,28 @@ export class AnswersDto {
         example: 'This is a comment'
     })
     comments?: string;
+
+    @ApiProperty({
+        description: 'List of answers for decision making (25 Items)',
+        required: true,
+        example: [1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5]
+    })
+    @IsNotEmpty()
+    decisionMaking: number[];
+
+    @ApiProperty({
+        description: 'List of answers for decision making (15 Items)',
+        required: true,
+        example: [1,2,3,4,5,
+                  1,2,3,4,5,
+                  1,2,3,4,5]
+    })
+    @IsNotEmpty()
+    personalityChoice: number[];
 
     @ApiProperty({
         description: 'The time stamp taken to complete the survey',

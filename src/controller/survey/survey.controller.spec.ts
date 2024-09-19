@@ -3,12 +3,14 @@ import { SurveyController } from './survey.controller';
 import { SurveyService } from '../../service/survey.service';
 import { mockQuestion, mockQuestionModel } from '../../schemas/question.schemas';
 import { mockAnswer, mockAnswersModel } from '../../schemas/answers.shcemas';
-import { HttpException } from '@nestjs/common';
+import {ValidationPipe} from '@nestjs/common';
+import { StudyIdDto } from '../../module/survey/studyId.dto';
 
 describe('SurveyController', () => {
   let controller: SurveyController;
   // let QuestionModel: Model<Question>;
   // let AnswersModel: Model<Answers>;
+  let validationPipe: ValidationPipe;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,6 +32,7 @@ describe('SurveyController', () => {
     controller = module.get<SurveyController>(SurveyController);
     // QuestionModel = module.get<Model<Question>>('QuestionModel');
     // AnswersModel = module.get<Model<Answers>>('AnswersModel');
+    validationPipe = new ValidationPipe({ transform: true, validateCustomDecorators: true });
   });
 
   it('should be defined', () => {
@@ -43,9 +46,14 @@ describe('SurveyController', () => {
       expect(actuall).toEqual({...expectData, save: expect.any(Function)});
     });
 
-    // invalid studyId
-    it ('should return error msg "studyId should be a number"', async () => {
-      await expect(controller.getQuestion({ studyId:6 })).rejects.toThrow(HttpException);
+    it('should throw BadRequestException for studyId 6', async () => {
+      await expect(validationPipe.transform({ studyId: 6 }, { type: 'query', metatype: StudyIdDto }))
+          .rejects.toThrow('Bad Request Exception');
+    });
+
+    it('should throw BadRequestException for studyId 0', async () => {
+      await expect(validationPipe.transform({ studyId: 0 }, { type: 'query', metatype: StudyIdDto }))
+          .rejects.toThrow('Bad Request Exception');
     });
   });
 

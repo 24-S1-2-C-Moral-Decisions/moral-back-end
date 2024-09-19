@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SurveyService } from "./survey.service";
 import { mockQuestion, mockQuestionModel, Question } from "../schemas/question.schemas";
 import { getModelToken } from "@nestjs/mongoose";
+import { cloneDeep } from 'lodash';
 import { Answers, mockAnswer, mockAnswersModel } from "../schemas/answers.shcemas";
 
 describe("SurveyService", () => {
@@ -78,6 +79,37 @@ describe("SurveyService", () => {
     it("should return null if id is not correct", async () => {
       const result = await service.findAnswersById({ id: "xxx" });
       expect(result).toBeNull();
+    });
+
+    it("should throw an error if decisionMaking is undefined", async () => {
+      const data = cloneDeep(mockAnswer);
+      await expect(service.createAnswers({ ...data, decisionMaking: undefined })).rejects.toThrow("Decision making results are required");
+    });
+
+    it("should throw an error if decisionMaking length is not 25", async () => {
+      const data = cloneDeep(mockAnswer);
+      await expect(service.createAnswers({ ...data, decisionMaking: [1] })).rejects.toThrow("Decision making array must have 25 items");
+    });
+
+    it("should throw an error if decisionMaking value is not between 1 and 5", async () => {
+      const data = cloneDeep(mockAnswer);
+      data.decisionMaking[0] = 0;
+      await expect(service.createAnswers(data)).rejects.toThrow("The value of Decision making question must between [1,5]");
+    });
+
+    it("should throw an error if personalityChoice is undefined", async () => {
+      await expect(service.createAnswers({ ...mockAnswer, personalityChoice: undefined })).rejects.toThrow("Personality choice results are required");
+    });
+
+    it("should throw an error if personalityChoice length is not 15", async () => {
+      const data = cloneDeep(mockAnswer);
+      await expect(service.createAnswers({ ...data, personalityChoice: [1] })).rejects.toThrow("Personality choice array must have 15 items");
+    });
+
+    it("should throw an error if personalityChoice value is not between 1 and 5", async () => {
+      const data = cloneDeep(mockAnswer);
+      data.personalityChoice[0] = 0;
+      await expect(service.createAnswers(data)).rejects.toThrow("The value of Personality choice question must between [1,5]");
     });
   });
 });

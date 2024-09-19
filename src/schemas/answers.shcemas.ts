@@ -18,6 +18,18 @@ export const mockAnswer = new AnswersDto({
       rating: 1
     },
   },
+  decisionMaking: [
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5
+  ],
+  personalityChoice: [
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5,
+    1, 2, 3, 4, 5
+  ],
   time: 123456789
 });
 
@@ -121,6 +133,12 @@ export class Answers{
 
   @Prop()
   comments: string;
+
+  @Prop({ type: [Number], required: true })
+  decisionMaking: number[];
+
+  @Prop({ type: [Number], required: true })
+  personalityChoice: number[];
 
   @Prop()
   time: number;
