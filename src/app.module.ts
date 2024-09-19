@@ -13,6 +13,7 @@ import { RateLimiterMiddleware } from './rate-limiter.middleware';
 import { ProlificService } from './service/prolific/prolific.service';
 import { ProlificController } from './controller/survey/prolific/prolific.controller';
 import { Prolific, ProlificSchema } from './schemas/prolific.shcemas';
+import { SearchController } from './controller/search/search.controller';
 
 const envFilePath = '.env/.'+(process.env.NODE_ENV ? process.env.NODE_ENV : 'development')+'.env';
 if (!process.env.NODE_ENV) {
@@ -58,7 +59,7 @@ else {
     { name: Answer.name, schema: AnswerSchema },
     { name: Answers.name, schema: AnswersSchema },
     { name: Prolific.name, schema: ProlificSchema }])],
-  controllers: [AppController, SurveyController, ProlificController],
+  controllers: [AppController, SurveyController, ProlificController, SearchController],
   providers: [AppService,SurveyService, ProlificService],
 })
 export class AppModule implements NestModule {
