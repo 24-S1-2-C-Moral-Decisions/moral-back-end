@@ -15,7 +15,7 @@ export class SurveyService {
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
         const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
-        question.count[studyId.studyId] += 1;
+        question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
         await question.save();
         return question;
     }

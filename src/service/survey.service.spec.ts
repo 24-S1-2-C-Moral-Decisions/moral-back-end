@@ -23,7 +23,7 @@ const question: Question = {
     "NA you are not the asshole for asking, as long as you can graciously accept a “no, I don’t want to” as an answer. ",
     "NA - If you've asked and she said yes, don't feel bad. If you still feel guilty though, maybe offer to pay for her to get her hair done a different color?",
   ],
-  count: [0, 1, 0, 0, 0]
+  count: [0, 1, 0, 0, 0, 0]
 };
 
 const answer = {

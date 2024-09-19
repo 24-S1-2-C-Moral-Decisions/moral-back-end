@@ -4,7 +4,7 @@ import { SurveyService } from '../../service/survey.service';
 import { QuestionDto } from '../../module/survey/question.dto';
 import { Question } from '../../schemas/question.schemas';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
-import { HttpException } from '@nestjs/common';
+import {ValidationPipe} from '@nestjs/common';
 
 const question: Question = {
   _id: "atcfwx",
@@ -25,7 +25,7 @@ const question: Question = {
     "NA you are not the asshole for asking, as long as you can graciously accept a “no, I don’t want to” as an answer. ",
     "NA - If you've asked and she said yes, don't feel bad. If you still feel guilty though, maybe offer to pay for her to get her hair done a different color?",
   ],
-  count: [0, 1, 0, 0, 0]
+  count: [0, 1, 0, 0, 0, 0]
 };
 
 const answer = {
@@ -49,6 +49,7 @@ const answer = {
 
 describe('SurveyController', () => {
   let controller: SurveyController;
+  let validationPipe: ValidationPipe;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -73,6 +74,7 @@ describe('SurveyController', () => {
     .compile();
 
     controller = module.get<SurveyController>(SurveyController);
+    validationPipe = new ValidationPipe({ transform: true, validateCustomDecorators: true });
   });
 
   it('should be defined', () => {
@@ -86,9 +88,14 @@ describe('SurveyController', () => {
       expect(actuall).toEqual(expectData);
     });
 
-    // invalid studyId
-    it ('should return error msg "studyId should be a number"', async () => {
-      await expect(controller.getQuestion({ studyId:6 })).rejects.toThrow(HttpException);
+    it('should throw BadRequestException for studyId 6', async () => {
+      await expect(validationPipe.transform({ studyId: 6 }, { type: 'query', metatype: StudyIdDto }))
+          .rejects.toThrow('Bad Request Exception');
+    });
+
+    it('should throw BadRequestException for studyId 0', async () => {
+      await expect(validationPipe.transform({ studyId: 0 }, { type: 'query', metatype: StudyIdDto }))
+          .rejects.toThrow('Bad Request Exception');
     });
   });
 
