@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { StudyIdDto } from '../module/survey/studyId.dto';
-import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
+import { AnswerIdDto } from '../module/survey/answers.dto';
 
 export const mockAnswer = {
   id: new AnswerIdDto('60f7c72b8f3f5e001f8c84b4'),

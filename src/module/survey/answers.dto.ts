@@ -2,7 +2,6 @@
 import { IsBoolean, IsNotEmpty, IsNumber, IsString, Length, Max, Min} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { StudyIdDto } from './studyId.dto';
-import { Prop } from '@nestjs/mongoose';
 
 class IndividualAnswerDto {
     @ApiProperty({
