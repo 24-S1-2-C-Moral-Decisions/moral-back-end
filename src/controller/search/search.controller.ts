@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SearchResultDto } from '../../module/search-result.dto';
 import { SearchOptionDto } from '../../module/search-option.dto';
@@ -23,7 +23,7 @@ export class SearchController {
     })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     async searchPost(@Query() searchOption: SearchOptionDto){
-        let res: SearchResultDto[] = [];
+        const res: SearchResultDto[] = [];
         if (searchOption.keywords !== undefined){
             for (let i = 0; i < 10; i++){
                 res.push({...this.mockData, topic:"unknown", id: `post-${i}`, title: `Key: ${searchOption.keywords}`});
