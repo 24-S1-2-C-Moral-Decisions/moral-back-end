@@ -6,7 +6,6 @@ import { Logger } from '@nestjs/common';
 import * as Joi from '@hapi/joi';
 import { SurveyController } from './controller/survey/survey.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import * as fs from 'fs';
 import { SurveyService } from './service/survey.service';
 import { Question, QuestionSchema } from './schemas/question.schemas';
 import { Answer, AnswerSchema, Answers, AnswersSchema, IndividualAnswer, IndividualAnswerSchema } from './schemas/answers.shcemas';
