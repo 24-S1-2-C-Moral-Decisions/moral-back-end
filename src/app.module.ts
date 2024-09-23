@@ -17,9 +17,12 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       envFilePath : [envFilePath, '.env/.env'],
       validationSchema: Joi.object({
         BACKEND_PORT: Joi.number().default(3000),
+        DATABASE_SURVEY_URL: Joi.string().required(),
+        DATABASE_POST_URL: Joi.string().required(),
       }),
     }),
-    SurveyModule
+    SurveyModule,
+    PostsModule
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -30,17 +33,5 @@ export class AppModule implements NestModule {
 
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RateLimiterMiddleware).forRoutes('/survey/answer');
-  }
-
-  onModuleInit() {
-    const requiredEnvVars = ['DATABASE_SURVEY_URL', 'BACKEND_PORT'];
-
-    requiredEnvVars.forEach((envVar) => {
-      const value = this.configService.get<string>(envVar);
-      if (!value) {
-        this.logger.error('${envVar} is not defined', '', 'Environment');
-        throw new Error(`Environment variable ${envVar} is not set`);
-      }
-    });
   }
 }

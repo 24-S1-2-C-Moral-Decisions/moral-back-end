@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Question, QuestionSchema } from '../../schemas/question.schemas';
-import { Answer, Answers, AnswerSchema, AnswersSchema, IndividualAnswer, IndividualAnswerSchema } from '../../schemas/answers.shcemas';
+import { Answers, AnswersSchema} from '../../schemas/answers.shcemas';
 import { Prolific, ProlificSchema } from '../../schemas/prolific.shcemas';
 import { SurveyController } from '../../controller/survey/survey.controller';
 import { ProlificController } from '../../controller/survey/prolific/prolific.controller';
