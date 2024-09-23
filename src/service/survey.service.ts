@@ -9,8 +9,8 @@ import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
 @Injectable()
 export class SurveyService {
     constructor(
-        @InjectModel(Question.name) private questionModel: Model<Question>,
-        @InjectModel(Answers.name) private answersModel: Model<Answers>
+        @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
+        @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {

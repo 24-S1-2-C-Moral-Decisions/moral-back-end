@@ -1,22 +1,22 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SearchController } from '../../controller/search/search.controller';
+import { PostController } from '../../controller/post/post.controller';
+import { PostService } from '../../service/post/post.service';
+import { MoralCache, MoralCacheSchema } from '../../schemas/cache.shcemas';
+import { CacheService } from '../../service/cache/cache.service';
 
 @Module({
     imports: [
-        MongooseModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => ({
-              uri: configService.get<string>('DATABASE_POST_URL'),
-            }),
-        }),
-        MongooseModule.forFeature([
-            // { name: Question.name, schema: QuestionSchema}
-        ]),
+        MongooseModule.forFeature(
+            [
+                // { name: Question.name, schema: QuestionSchema}
+                { name: MoralCache.name , schema: MoralCacheSchema}
+            ], 
+            'cache'
+        ),
     ],
-    controllers: [SearchController],
-    providers: [],
+    controllers: [SearchController, PostController],
+    providers: [PostService, CacheService],
 })
 export class PostsModule {}
