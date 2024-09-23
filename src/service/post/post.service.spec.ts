@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostService } from './post.service';
-import { get } from 'http';
 import { getConnectionToken } from '@nestjs/mongoose';
 
 describe('PostService', () => {
