@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from '../../service/survey.service';
-import { mockQuestion, mockQuestionModel } from '../../schemas/question.schemas';
-import { mockAnswer, mockAnswersModel } from '../../schemas/answers.shcemas';
+import { mockQuestion, mockQuestionModel, Question } from '../../schemas/question.schemas';
+import { Answers, mockAnswer, mockAnswersModel } from '../../schemas/answers.shcemas';
 import {ValidationPipe} from '@nestjs/common';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
+import { getModelToken } from '@nestjs/mongoose';
 
 describe('SurveyController', () => {
   let controller: SurveyController;
@@ -18,13 +19,13 @@ describe('SurveyController', () => {
       providers: [
         SurveyService,
         {
-          provide: 'QuestionModel',
-          useValue: mockQuestionModel
+          provide: getModelToken(Answers.name, "survey"),
+          useValue: mockAnswersModel,
         },
         {
-          provide: 'AnswersModel',
-          useValue: mockAnswersModel
-        }
+          provide: getModelToken(Question.name, "survey"),
+          useValue: mockQuestionModel,
+        },
       ]
     })
     .compile();

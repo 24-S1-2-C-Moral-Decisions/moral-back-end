@@ -11,7 +11,7 @@ describe('ProlificService', () => {
       providers: [ProlificService],
     })
     .useMocker((token) => {
-      if (token === getModelToken(Prolific.name)) {
+      if (token === getModelToken(Prolific.name, 'survey')) {
         return {
           findOneAndUpdate: jest.fn().mockResolvedValue(expectData),
         };
