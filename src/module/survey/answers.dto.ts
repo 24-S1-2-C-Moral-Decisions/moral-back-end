@@ -86,7 +86,6 @@ export class AnswersDto {
         required: false,
         example: '60f7c72b8f3f5e001f8c84b4'
     })
-    @IsString()
     id?: AnswerIdDto;
 
     @IsNotEmpty()
