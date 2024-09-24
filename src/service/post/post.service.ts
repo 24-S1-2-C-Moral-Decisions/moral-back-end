@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 import { PostDocDto } from '../../module/posts/post.dto';
-import { PostDoc } from '../../schemas/post.shcemas';
 
 @Injectable()
 export class PostService {

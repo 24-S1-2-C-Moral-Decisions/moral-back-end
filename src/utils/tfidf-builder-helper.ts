@@ -10,7 +10,7 @@ export class TfIdfBuildHelper {
         collectionName: string
     }) {
         return new Worker(
-            "./src/utils/tfidf-builder.ts",
+            "./src/utils/tfidf-builder.js",
             {
                 workerData
             }

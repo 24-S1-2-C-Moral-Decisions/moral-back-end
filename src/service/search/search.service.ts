@@ -51,7 +51,7 @@ export class SearchService {
 
     async setupTfidfCache() {
         let documentCount = 0;
-        let startTime = performance.now();
+        const startTime = performance.now();
 
         Logger.log('Setting up tfidf cache', "SearchService");
         this.building = true;
@@ -105,7 +105,7 @@ export class SearchService {
         // 等待所有 Worker 完成任务
         Promise.all(workerPromises).then(() => {
             this.building = false;
-            Logger.log(`Tfidf cache setup complete in ${performance.now() - startTime} ms`, "SearchService");
+            Logger.log(`Tfidf cache setup complete ${documentCount} doucuments in ${performance.now() - startTime} ms`, "SearchService");
         });
     }
 
@@ -122,7 +122,7 @@ export class SearchService {
             return result.id.__key;
         });
 
-        let res: PostDocDto[] = [];
+        const res: PostDocDto[] = [];
         for (const postId of postIds) {
             const data = await this.postModel.findById(postId);
             if (!data)
