@@ -81,7 +81,7 @@ export class SearchService {
                     worker.on('message', (message) => {
                         Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
                         for (const post of message.documents) {
-                            this.tfidf.addDocument(post.selftext, post._id);
+                            this._tfidfData.tfidf.addDocument(post.selftext, post._id);
                         }
                         documentCount += message.documents.length;
                     });
@@ -105,7 +105,7 @@ export class SearchService {
         // 等待所有 Worker 完成任务
         Promise.all(workerPromises).then(() => {
             this.building = false;
-            Logger.log(`Tfidf cache setup complete ${documentCount} doucuments in ${performance.now() - startTime} ms`, "SearchService");
+            Logger.log(`Tfidf cache setup complete ${documentCount} doucuments with ${numWorkers} thread in ${performance.now() - startTime} ms`, "SearchService");
         });
     }
 
