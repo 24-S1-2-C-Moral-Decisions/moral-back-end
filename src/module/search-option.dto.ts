@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class SearchOptionDto {
     @ApiProperty({
@@ -19,4 +19,12 @@ export class SearchOptionDto {
     @IsString()
     @IsOptional()
     keywords?: string;
+
+    @ApiProperty({
+        description: 'The limit of the search',
+        required: false,
+        example: 10
+    })
+    @IsOptional()
+    limit?: number;
 }

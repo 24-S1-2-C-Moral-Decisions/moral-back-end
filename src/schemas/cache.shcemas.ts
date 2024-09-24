@@ -8,9 +8,9 @@ export class MoralCache extends Document {
 
   @Prop({
     required: true,
-    type: mongoose.Schema.Types.Mixed
+    type: String
   })
-  value: object;
+  value: string;
 
   @Prop({ required: true })
   expiresAt: Date;

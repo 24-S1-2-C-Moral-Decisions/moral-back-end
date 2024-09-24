@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
+import { PostDocDto } from '../../module/posts/post.dto';
+import { PostDoc } from '../../schemas/post.shcemas';
 
 @Injectable()
 export class PostService {
@@ -19,5 +21,31 @@ export class PostService {
             })
         )
         return topicList;
+    }
+
+    async getPostsByTopic(topic: string, limit: number = 10 ): Promise<PostDocDto[]> {
+        const docsLis = await this.posts.db.collection(topic).find().limit(limit);
+        const docs = await docsLis.toArray();
+        const posts = Promise.all(
+            docs.map(async (doc) => {
+                return new PostDocDto({
+                    _id: doc._id.toString(),
+                    title: doc.title,
+                    verdict: doc.verdict,
+                    topic_1: doc.topic_1,
+                    topic_1_p: doc.topic_1_p,
+                    topic_2: doc.topic_2,
+                    topic_2_p: doc.topic_2_p,
+                    topic_3: doc.topic_3,
+                    topic_3_p: doc.topic_3_p,
+                    topic_4: doc.topic_4,
+                    topic_4_p: doc.topic_4_p,
+                    num_comments: doc.num_comments,
+                    resolved_verdict: doc.resolved_verdict,
+                    selftext: doc.selftext
+                });
+            })
+        );
+        return posts;
     }
 }
