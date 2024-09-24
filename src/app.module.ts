@@ -18,6 +18,7 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       validationSchema: Joi.object({
         BACKEND_PORT: Joi.number().default(3000),
         DATABASE_URL: Joi.string().required(),
+        TFIDF_ADD_DOCUMENT_BATCH_SIZE: Joi.number().required(),
       }),
     }),
     MongooseModule.forRoot(

@@ -1,8 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiOkResponse, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
 import { SearchOptionDto } from '../../module/search-option.dto';
 import { PostDocDto } from '../../module/posts/post.dto';
-import { SearchService } from '../../service/search/search.service';
+import { SearchService, TfIdfBuildingException } from '../../service/search/search.service';
 import { PostService } from '../../service/post/post.service';
 
 @Controller('search')
@@ -34,19 +34,36 @@ export class SearchController {
         type: [PostDocDto],
     })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
+    @ApiServiceUnavailableResponse({ description: 'Server is rebuilding searching cache, please waiting' })
     async searchPost(@Query() searchOption: SearchOptionDto){
         let res: PostDocDto[] = [];
-        if (searchOption.keywords !== undefined){
-            res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
-        }
-        else if (searchOption.topic !== undefined){
-            if (searchOption.keywords === undefined){
-                res = await this.postService.getPostsByTopic(searchOption.topic, searchOption.limit);
-            }
-            else {
+        try {
+            if (searchOption.keywords !== undefined){
                 res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
             }
+            else if (searchOption.topic !== undefined){
+                if (searchOption.keywords === undefined){
+                    res = await this.postService.getPostsByTopic(searchOption.topic, searchOption.limit);
+                }
+                else {
+                    res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
+                }
+            }
         }
+        catch (e) {
+            if (e instanceof TfIdfBuildingException) {
+                throw new HttpException(
+                    {
+                    status: HttpStatus.SERVICE_UNAVAILABLE,
+                    error: e.message,
+                    },
+                    HttpStatus.SERVICE_UNAVAILABLE,
+                );
+            }
+            else
+                throw e;
+        }
+        
         return res;
     }
 }

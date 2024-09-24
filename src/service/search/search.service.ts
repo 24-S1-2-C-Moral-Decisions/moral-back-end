@@ -5,10 +5,12 @@ import { Connection, Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { PostDocDto } from '../../module/posts/post.dto';
 import { PostDoc } from '../../schemas/post.shcemas';
+import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
 
 @Injectable()
 export class SearchService {
     private tfidf: natural.TfIdf;
+    private tfidfBuilding: boolean = false;
     private cacheKey = 'tfidf';
 
     constructor(
@@ -29,26 +31,77 @@ export class SearchService {
     }
 
     async setupTfidfCache() {
+        let documentCount = 0;
+        let startTime = performance.now();
+
         Logger.log('Setting up tfidf cache', "SearchService");
+        this.tfidfBuilding = true;
+
         this.cacheService.deleteCache(this.cacheKey)
         this.tfidf = new natural.TfIdf();
 
-        for await (const post of this.poetConnection.collection('all').find()) {
-            this.tfidf.addDocument(post.selftext, post._id);
-            console.log('Added document', post.selftext);
-            break;
-        }
+        const totalDocuments = await this.poetConnection.collection('all').countDocuments();
+        const batchSize:number = process.env.TFIDF_ADD_DOCUMENT_BATCH_SIZE ? parseInt(process.env.TFIDF_ADD_DOCUMENT_BATCH_SIZE) : 1;
+        const numWorkers = Math.ceil(totalDocuments / batchSize);
+        
+        Logger.log(`Setting up tfidf in ${numWorkers} thread`, "SearchService");
+        const workerPromises = [];
+        for (let i = 0; i < numWorkers; i++){
+            const skip = i * batchSize;
+            workerPromises.push(
+                new Promise((resolve, reject) => {
+                    const worker = TfIdfBuildHelper.getWorker(
+                        {
+                            skip,
+                            limit: batchSize,
+                            postConnectionUri: process.env.DATABASE_URL,
+                            dbName: 'posts',
+                            collectionName: 'all'
+                        }
+                    );
+    
+                    worker.on('message', (message) => {
+                        Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
+                        for (const post of message.documents) {
+                            this.tfidf.addDocument(post.selftext, post._id);
+                        }
+                        documentCount += message.documents.length;
+                    });
 
-        // ttl = 100 years (forever)
-        // this.cacheService.setCache(this.cacheKey, this.tfidf, 60 * 60 * 24 * 365 * 100);
-        Logger.log('Tfidf cache setup complete', "SearchService");
+                    worker.on('error', (err) => {
+                        Logger.error(`Worker ${i + 1} encountered an error: ${err}`, "SearchService");
+                        reject(err);
+                      });
+            
+                    worker.on('exit', (code) => {
+                        if (code !== 0) {
+                            reject(new Error(`Worker stopped with exit code ${code}`));
+                        }
+                        Logger.log(`Worker ${i + 1} exited with ${code}`, "SearchService");
+                        resolve(`Worker ${i + 1} finished`);
+                    });
+                })
+            );                
+        }
+        
+        // 等待所有 Worker 完成任务
+        Promise.all(workerPromises).then(() => {
+            // console.log(this.tfidf);
+
+            // ttl = 1 month
+            // 60 * 60 * 24 * 30 = 2592000
+            // this.cacheService.setCache(this.cacheKey, this.tfidf, process.env.TFIDF_CACHE_TTL ? parseInt(process.env.TFIDF_CACHE_TTL) : 60 * 60 * 24 * 30);
+            this.tfidfBuilding = false;
+            Logger.log(`Tfidf cache setup complete in ${performance.now() - startTime} ms`, "SearchService");
+        });
     }
 
     async search(topic:string, query: string, limit: number = 10): Promise<PostDocDto[]> {
-
-        // TODO: Check whether the tfidf is setting up cache properly
-        if (!this.tfidf) {
-            throw new Error('Tfidf not initialized');
+        if (this.tfidfBuilding) {
+            throw new TfIdfBuildingException();
+        }
+        else if (!this.tfidf) {
+            throw new Error('TfIdf is not initialized');
         }
 
         const similerList = [];
@@ -77,5 +130,11 @@ export class SearchService {
             }
         }
         return res;
+    }
+}
+
+export class TfIdfBuildingException extends Error {
+    constructor() {
+        super('Server is still building tfidf cache, please waiting');
     }
 }
