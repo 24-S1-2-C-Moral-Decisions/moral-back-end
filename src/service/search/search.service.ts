@@ -9,25 +9,44 @@ import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
 
 @Injectable()
 export class SearchService {
-    private tfidf: natural.TfIdf;
-    private tfidfBuilding: boolean = false;
-    private cacheKey = 'tfidf';
+    private _tfidfData: {
+        tfidf?: natural.TfIdf;
+        building: boolean;
+        expireAt?: Date
+    } = {
+        building: false
+    };
+
+    private get tfidf(): natural.TfIdf {
+        if (this._tfidfData.building) {
+            throw new TfIdfBuildingException();
+        }
+        else if (!this._tfidfData.tfidf || this._tfidfData.expireAt < new Date()) {
+            this.setupTfidfCache();
+            throw new TfIdfBuildingException();
+        }
+        return this._tfidfData.tfidf;
+    }
+
+    private set tfidf(value: natural.TfIdf) {
+        this._tfidfData.tfidf = value;
+        this._tfidfData.expireAt = new Date(Date.now() + (parseInt(process.env.TFIDF_CACHE_TTL) * 1000));
+    }
+
+    private get building(): boolean {
+        return this._tfidfData.building;
+    }
+
+    private set building(value: boolean) {
+        this._tfidfData.building = value;
+    }
 
     constructor(
         @InjectModel(PostDoc.name, 'posts') private postModel: Model<PostDoc>,
         @InjectConnection('posts') private readonly poetConnection: Connection,
         private readonly cacheService: CacheService
     ) {
-        this.init()
-    }
-
-    async init() {
-        const tfidfSerialized = await this.cacheService.getCache('tfidf');
-        if (tfidfSerialized) {
-            this.tfidf = new natural.TfIdf(tfidfSerialized);
-        } else {
-            this.setupTfidfCache();
-        }
+        this.setupTfidfCache();
     }
 
     async setupTfidfCache() {
@@ -35,14 +54,13 @@ export class SearchService {
         let startTime = performance.now();
 
         Logger.log('Setting up tfidf cache', "SearchService");
-        this.tfidfBuilding = true;
+        this.building = true;
 
-        this.cacheService.deleteCache(this.cacheKey)
         this.tfidf = new natural.TfIdf();
 
         const totalDocuments = await this.poetConnection.collection('all').countDocuments();
-        const batchSize:number = process.env.TFIDF_ADD_DOCUMENT_BATCH_SIZE ? parseInt(process.env.TFIDF_ADD_DOCUMENT_BATCH_SIZE) : 1;
-        const numWorkers = Math.ceil(totalDocuments / batchSize);
+        const numWorkers = parseInt(process.env.TFIDF_WORKER_NUM ?? '1');
+        const batchSize:number = Math.ceil(totalDocuments / numWorkers);
         
         Logger.log(`Setting up tfidf in ${numWorkers} thread`, "SearchService");
         const workerPromises = [];
@@ -86,24 +104,12 @@ export class SearchService {
         
         // 等待所有 Worker 完成任务
         Promise.all(workerPromises).then(() => {
-            // console.log(this.tfidf);
-
-            // ttl = 1 month
-            // 60 * 60 * 24 * 30 = 2592000
-            // this.cacheService.setCache(this.cacheKey, this.tfidf, process.env.TFIDF_CACHE_TTL ? parseInt(process.env.TFIDF_CACHE_TTL) : 60 * 60 * 24 * 30);
-            this.tfidfBuilding = false;
+            this.building = false;
             Logger.log(`Tfidf cache setup complete in ${performance.now() - startTime} ms`, "SearchService");
         });
     }
 
     async search(topic:string, query: string, limit: number = 10): Promise<PostDocDto[]> {
-        if (this.tfidfBuilding) {
-            throw new TfIdfBuildingException();
-        }
-        else if (!this.tfidf) {
-            throw new Error('TfIdf is not initialized');
-        }
-
         const similerList = [];
         this.tfidf.tfidfs(query, (i, measure) => {
             similerList.push({ id: this.tfidf.documents[i], measure });
