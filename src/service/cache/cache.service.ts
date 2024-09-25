@@ -12,7 +12,7 @@ export class CacheService {
         if (cacheData && cacheData.expiresAt > new Date()) {
             return cacheData.value;
         }
-        if (cacheData) await this.cacheModel.deleteOne({ key });
+        if (cacheData) this.cacheModel.deleteOne({ key });
         return null;
     }
 
@@ -20,7 +20,7 @@ export class CacheService {
         const ttl = 60 * 60 * 24 * 30; // 1 month
         // const ttl = 5; // 5 seconds
         const expiresAt = new Date(Date.now() + ttl * 1000);
-        await this.cacheModel.updateOne(
+        this.cacheModel.updateOne(
           { key },
           { key, value, expiresAt },
           { upsert: true },
@@ -28,6 +28,6 @@ export class CacheService {
     }
 
     async deleteCache(key: string): Promise<void> {
-        await this.cacheModel.deleteOne({ key });
+        this.cacheModel.deleteOne({ key });
     }
 }
