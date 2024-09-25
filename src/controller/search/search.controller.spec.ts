@@ -1,5 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SearchController } from './search.controller';
+import { PostService } from '../../service/post/post.service';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
+import { SearchService } from '../../service/search/search.service';
+import { PostDoc } from '../../schemas/post.shcemas';
+import { CacheService } from '../../service/cache/cache.service';
+import { MoralCache } from '../../schemas/cache.shcemas';
 
 describe('SearchController', () => {
   let controller: SearchController;
@@ -7,6 +13,30 @@ describe('SearchController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SearchController],
+      providers: [
+        {
+          provide: SearchService,
+          useValue: {},
+        },
+        PostService,
+        CacheService,
+        {
+          provide: getModelToken(MoralCache.name, 'cache'),
+          useValue: {},
+        },
+        {
+          provide: getModelToken(PostDoc.name, 'posts'),
+          useValue: {},
+        },
+        {
+          provide: getConnectionToken('posts'),
+          useValue: {
+            collection: jest.fn().mockRejectedValue({
+              countDocuments: jest.fn().mockResolvedValue(1),
+            }),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<SearchController>(SearchController);
