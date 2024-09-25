@@ -58,6 +58,23 @@ export class SearchService {
 
         this.tfidf = new natural.TfIdf();
 
+        // const collection = this.poetConnection.collection('all');
+        // let documentList = [];
+        // for await (const post of collection.find()){
+        //     documentList.push(post);
+        //     documentCount++;
+        //     if (documentCount % 1000 == 0) {
+        //         Logger.log(`Adding ${documentList.length} document to tfidf cache`, "SearchService");
+        //         for (const post of documentList) {
+        //             this._tfidfData.tfidf.addDocument(post.selftext, post._id);
+        //         }
+        //         documentList = [];
+        //     }
+        // }
+        // this.building = false;
+        // Logger.log(`Tfidf cache setup complete ${documentCount} doucuments in ${performance.now() - startTime} ms`, "SearchService");
+
+
         const totalDocuments = await this.poetConnection.collection('all').countDocuments();
         const numWorkers = parseInt(process.env.TFIDF_WORKER_NUM ?? '1');
         const batchSize:number = Math.ceil(totalDocuments / numWorkers);
@@ -88,6 +105,7 @@ export class SearchService {
 
                     worker.on('error', (err) => {
                         Logger.error(`Worker ${i + 1} encountered an error: ${err}`, "SearchService");
+                        this.building = false;
                         reject(err);
                       });
             
@@ -102,7 +120,6 @@ export class SearchService {
             );                
         }
         
-        // 等待所有 Worker 完成任务
         Promise.all(workerPromises).then(() => {
             this.building = false;
             Logger.log(`Tfidf cache setup complete ${documentCount} doucuments with ${numWorkers} thread in ${performance.now() - startTime} ms`, "SearchService");

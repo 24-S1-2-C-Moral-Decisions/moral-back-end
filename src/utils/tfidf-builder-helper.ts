@@ -12,7 +12,8 @@ export class TfIdfBuildHelper {
         return new Worker(
             "./src/utils/tfidf-builder.js",
             {
-                workerData
+                workerData,
+                execArgv: ['--unhandled-rejections=strict' ]
             }
         );
     }
