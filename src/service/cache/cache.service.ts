@@ -12,22 +12,22 @@ export class CacheService {
         if (cacheData && cacheData.expiresAt > new Date()) {
             return JSON.parse(cacheData.value);
         }
-        if (cacheData) await this.cacheModel.deleteOne({ key });
+        if (cacheData) this.cacheModel.deleteOne({ key });
         return undefined;
     }
 
-    async setCache(key: string, value: object, ttl: number = 60 * 60 * 24 * 30): Promise<void> {
+    setCache(key: string, value: object, ttl: number = parseInt(process.env.DEFAULT_CACHE_TTL)){
         // 1 month
         // const ttl = 5; // 5 seconds
         const expiresAt = new Date(Date.now() + ttl * 1000);
-        await this.cacheModel.updateOne(
+        this.cacheModel.updateOne(
           { key },
           { key, value: JSON.stringify(value), expiresAt },
           { upsert: true },
         );
     }
 
-    async deleteCache(key: string): Promise<void> {
-        await this.cacheModel.deleteOne({ key });
+    deleteCache(key: string) {
+        this.cacheModel.deleteOne({ key });
     }
 }
