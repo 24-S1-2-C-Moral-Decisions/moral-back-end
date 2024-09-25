@@ -13,7 +13,7 @@ export class TfIdfBuildHelper {
             "./src/utils/tfidf-builder.js",
             {
                 workerData,
-                execArgv: ['--unhandled-rejections=strict' ]
+                // execArgv: ['--unhandled-rejections=strict' ]
             }
         );
     }

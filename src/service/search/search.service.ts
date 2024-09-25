@@ -105,9 +105,8 @@ export class SearchService {
 
                     worker.on('error', (err) => {
                         Logger.error(`Worker ${i + 1} encountered an error: ${err}`, "SearchService");
-                        this.building = false;
                         reject(err);
-                      });
+                    });
             
                     worker.on('exit', (code) => {
                         if (code !== 0) {
@@ -123,6 +122,9 @@ export class SearchService {
         Promise.all(workerPromises).then(() => {
             this.building = false;
             Logger.log(`Tfidf cache setup complete ${documentCount} doucuments with ${numWorkers} thread in ${performance.now() - startTime} ms`, "SearchService");
+        }).catch((err) => {
+            Logger.error(`Workers encountered an error: ${err}`, "SearchService");
+            this.building = false;
         });
     }
 
