@@ -15,10 +15,10 @@ RUN npm run build
 
 # set environment variables
 ARG BACKEND_PORT=3001
-ENV BACKEND_PORT=${BACKEND_PORT}
+ENV PORT=${BACKEND_PORT}
 
 VOLUME /app/.env
 
 # Expose port and start application
-EXPOSE $BACKEND_PORT
+EXPOSE $PORT
 CMD ["npm", "start"]

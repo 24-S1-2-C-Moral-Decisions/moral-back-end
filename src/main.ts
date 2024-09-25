@@ -30,9 +30,9 @@ async function bootstrap() {
     app.enableCors();
   }
 
-  await app.listen(process.env.BACKEND_PORT, () => {
+  await app.listen(process.env.PORT, () => {
     // console.log(`Server running on http://localhost:${process.env.PORT}`);
-    Logger.log('Server running on http://localhost:' + process.env.BACKEND_PORT, 'Bootstrap');
+    Logger.log('Server running on http://localhost:' + process.env.PORT, 'Bootstrap');
   });
 }
 bootstrap();
