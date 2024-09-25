@@ -7,6 +7,8 @@ import { RateLimiterMiddleware } from './rate-limiter.middleware';
 import { SurveyModule } from './module/survey/survey.module';
 import { PostsModule } from './module/posts/posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Prolific } from './entity/Prolific';
 
 const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'development' : 'production');
 
@@ -22,29 +24,37 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
         DEFAULT_CACHE_TTL: Joi.number().required(),
       }),
     }),
-    MongooseModule.forRoot(
-      process.env.DATABASE_URL, 
-      {
-        dbName: 'posts',
-        connectionName: 'posts',
-      }
-    ),
-    MongooseModule.forRoot(
-      process.env.DATABASE_URL, 
-      {
-        dbName: 'survey',
-        connectionName: 'survey',
-      }
-    ),
-    MongooseModule.forRoot(
-      process.env.DATABASE_URL, 
-      {
-        dbName: 'cache',
-        connectionName: 'cache',
-      }
-    ),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.DATABASE_URL,
+      database: 'survey',
+      name: 'survey',
+      entities: [Prolific],
+      retryAttempts: 5,
+    }),
+    // MongooseModule.forRoot(
+    //   process.env.DATABASE_URL, 
+    //   {
+    //     dbName: 'posts',
+    //     connectionName: 'posts',
+    //   }
+    // ),
+    // MongooseModule.forRoot(
+    //   process.env.DATABASE_URL, 
+    //   {
+    //     dbName: 'survey',
+    //     connectionName: 'survey',
+    //   }
+    // ),
+    // MongooseModule.forRoot(
+    //   process.env.DATABASE_URL, 
+    //   {
+    //     dbName: 'cache',
+    //     connectionName: 'cache',
+    //   }
+    // ),
     SurveyModule,
-    PostsModule
+    // PostsModule
   ],
   controllers: [AppController],
   providers: [AppService],

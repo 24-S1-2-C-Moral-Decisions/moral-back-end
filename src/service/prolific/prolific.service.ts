@@ -1,22 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Prolific } from '../../schemas/prolific.shcemas';
 import { Model } from 'mongoose';
-import { ProlificDto } from '../../module/survey/prolific.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Prolific } from '../../entity/Prolific';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProlificService {
     constructor(
-        @InjectModel(Prolific.name, 'survey') private prolificModel: Model<Prolific>
+        @InjectRepository(Prolific, 'survey') private prolificRepository: Repository<Prolific>,
     ) { }
 
-    async createOrUpdate(prolific: ProlificDto): Promise<ProlificDto> {
-        return await Promise.resolve(this.prolificModel.findOneAndUpdate({ id: prolific.id }, prolific, { upsert: true, new: true }));
+    async createOrUpdate(prolificId: string, prolificData: Partial<Prolific>): Promise<Prolific> {
+        let entity = await this.findProlificById(prolificId);
+
+        if (!entity) {
+            entity = this.createProlific(prolificData);
+            return this.prolificRepository.save(entity);
+        }
+        else {
+            entity = this.prolificRepository.merge(entity, prolificData);
+            this.prolificRepository.update(entity._id, entity);
+            return entity;
+        }
     }
 
-    async findProlificById(id: string): Promise<ProlificDto> {
-        return await this.prolificModel.findOne({ id: id }).then((res) => {
-            return res;
-        });
+    async findProlificById(id: string): Promise<Prolific> {
+        return this.prolificRepository.findOneBy({ prolificId: id });
+    }
+
+    createProlific(prolific: Partial<Prolific>): Prolific {
+        return this.prolificRepository.create(prolific);
     }
 }

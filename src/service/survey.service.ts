@@ -9,18 +9,19 @@ import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
 @Injectable()
 export class SurveyService {
     constructor(
-        @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
-        @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
+        // @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
+        // @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
-        const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
-                if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
-            throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
-        }
-        question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
-        await question.save();
-        return question;
+        // const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
+        //         if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
+        //     throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
+        // }
+        // question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
+        // await question.save();
+        // return question;
+        return null;
     }
 
     async createAnswers(answers: AnswersDto): Promise<string>{  
@@ -48,12 +49,14 @@ export class SurveyService {
             }
         });
         
-        const res = await this.answersModel.create(answers);
-        return res._id.toString(); 
+        // const res = await this.answersModel.create(answers);
+        // return res._id.toString(); 
+        return null;
     }
 
     async findAnswersById(id: AnswerIdDto): Promise<Answers> {
-        return this.answersModel.findById(id).exec();
+        // return this.answersModel.findById(id).exec();
+        return null;
     }
 
     // async initCount() {
