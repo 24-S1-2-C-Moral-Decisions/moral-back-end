@@ -9,14 +9,14 @@ import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
 @Injectable()
 export class SurveyService {
     constructor(
-        @InjectModel(Question.name) private questionModel: Model<Question>,
-        @InjectModel(Answers.name) private answersModel: Model<Answers>
+        @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
+        @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
         const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
-        if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
-            throw new Error('studyId out of range, should be [1, 5]');
+                if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
+            throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
         }
         question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
         await question.save();

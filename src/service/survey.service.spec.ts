@@ -15,11 +15,11 @@ describe("SurveyService", () => {
       providers: [
         SurveyService,
         {
-          provide: getModelToken(Answers.name),
+          provide: getModelToken(Answers.name, "survey"),
           useValue: mockAnswersModel,
         },
         {
-          provide: getModelToken(Question.name),
+          provide: getModelToken(Question.name, "survey"),
           useValue: mockQuestionModel,
         },
       ],
