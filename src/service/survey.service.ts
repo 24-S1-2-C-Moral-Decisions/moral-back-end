@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { Answers } from '../schemas/answers.shcemas';
 import { StudyIdDto } from '../module/survey/studyId.dto';
-import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
 import { Question } from '../entity/Question';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
+import { Answer } from '../entity/Answer';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class SurveyService {
     constructor(
-        // @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
-        // @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
+        @InjectRepository(Answer, 'survey') private answerRepository: MongoRepository<Answer>,
         @InjectRepository(Question, 'survey') private questionRepository: MongoRepository<Question>,
     ) { }
 
@@ -29,7 +28,7 @@ export class SurveyService {
         return question;
     }
 
-    async createAnswers(answers: AnswersDto): Promise<string>{  
+    async createAnswers(answers: Answer): Promise<string>{  
         if (answers.decisionMaking === undefined) {
             throw new Error('Decision making results are required');
         }
@@ -53,15 +52,17 @@ export class SurveyService {
                 throw new Error('The value of Personality choice question must between [1,5]');
             }
         });
-        
-        // const res = await this.answersModel.create(answers);
-        // return res._id.toString(); 
-        return null;
+
+        if (! (answers.answerDetail instanceof Array)) {
+            answers.answerDetail = [answers.answerDetail];
+        }
+
+        const entity = this.answerRepository.create(answers);
+        return (await this.answerRepository.save(entity))._id.toString();
     }
 
-    async findAnswersById(id: AnswerIdDto): Promise<Answers> {
-        // return this.answersModel.findById(id).exec();
-        return null;
+    async findAnswersById(id: string): Promise<Answer> {
+        return await this.answerRepository.findOneBy({ _id: new ObjectId(id) });
     }
 
     // async initCount() {

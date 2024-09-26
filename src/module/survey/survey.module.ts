@@ -6,6 +6,7 @@ import { ProlificService } from '../../service/prolific/prolific.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
 import { Question } from '../../entity/Question';
+import { Answer, AnswerItem } from '../../entity/Answer';
 
 @Module({
     imports: [
@@ -20,7 +21,7 @@ import { Question } from '../../entity/Question';
         TypeOrmModule.forFeature(
             [
                 Question,
-                // Answers,
+                Answer,
                 Prolific
             ],
             'survey'

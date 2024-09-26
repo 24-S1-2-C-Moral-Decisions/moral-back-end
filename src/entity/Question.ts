@@ -1,6 +1,4 @@
-import { Double } from "mongodb";
-import { toArray } from "rxjs";
-import { AfterInsert, AfterLoad, AfterRemove, AfterUpdate, BeforeInsert, BeforeRecover, BeforeRemove, BeforeUpdate, Column, Entity, ObjectId, ObjectIdColumn, PrimaryColumn } from "typeorm"
+import {Column, Entity, PrimaryColumn } from "typeorm"
 
 @Entity('posts')
 export class Question {
@@ -61,9 +59,3 @@ export const mockQuestion: Question = {
     count: [0, 1, 0, 0, 0]
   };
   
-  export const mockQuestionModel = {
-    aggregate: jest.fn().mockReturnValue({
-        toArray: jest.fn().mockResolvedValue([mockQuestion])
-    }),
-    updateOne: jest.fn().mockResolvedValue(mockQuestion),
-  };

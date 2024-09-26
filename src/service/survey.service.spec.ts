@@ -4,7 +4,7 @@ import { getModelToken } from "@nestjs/mongoose";
 import { cloneDeep } from 'lodash';
 import { Answers, mockAnswer, mockAnswersModel } from "../schemas/answers.shcemas";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { mockQuestion, mockQuestionModel, Question } from "../entity/Question";
+import { mockQuestion, Question } from "../entity/Question";
 
 describe("SurveyService", () => {
   let service: SurveyService;
@@ -21,7 +21,12 @@ describe("SurveyService", () => {
         },
         {
           provide: getRepositoryToken(Question, "survey"),
-          useValue: mockQuestionModel,
+          useValue: {
+            aggregate: jest.fn().mockReturnValue({
+                toArray: jest.fn().mockResolvedValue([mockQuestion])
+            }),
+            updateOne: jest.fn().mockResolvedValue(mockQuestion),
+          },
         },
       ],
     })
