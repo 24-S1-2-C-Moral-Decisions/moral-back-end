@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProlificService } from './prolific.service';
 import { getModelToken } from '@nestjs/mongoose';
-import { Prolific } from '../../schemas/prolific.shcemas';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Prolific } from '../../entity/Prolific';
 
 describe('ProlificService', () => {
   let service: ProlificService;

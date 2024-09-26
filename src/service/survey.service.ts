@@ -1,27 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Question } from '../schemas/question.schemas';
 import { Answers } from '../schemas/answers.shcemas';
 import { StudyIdDto } from '../module/survey/studyId.dto';
 import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
+import { Question } from '../entity/Question';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
 
 @Injectable()
 export class SurveyService {
     constructor(
         // @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
         // @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
+        @InjectRepository(Question, 'survey') private questionRepository: MongoRepository<Question>,
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
-        // const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
-        //         if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
-        //     throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
-        // }
-        // question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
-        // await question.save();
-        // return question;
-        return null;
+        const questions = await this.questionRepository.aggregate([
+            { $sort: { [`count.${studyId.studyId}`]: 1 } },
+            { $limit: 1 }
+        ]).toArray();
+
+        const question = questions.length > 0 ? questions[0] : null;
+        if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
+            throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
+        }
+        question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
+        this.questionRepository.updateOne({ _id: question._id }, { $set: { count: question.count } });
+        return question;
     }
 
     async createAnswers(answers: AnswersDto): Promise<string>{  

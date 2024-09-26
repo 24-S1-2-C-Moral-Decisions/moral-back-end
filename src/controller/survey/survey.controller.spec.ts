@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from '../../service/survey.service';
-import { mockQuestion, mockQuestionModel, Question } from '../../schemas/question.schemas';
 import { Answers, mockAnswer, mockAnswersModel } from '../../schemas/answers.shcemas';
 import {ValidationPipe} from '@nestjs/common';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { getModelToken } from '@nestjs/mongoose';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { mockQuestion, mockQuestionModel, Question } from '../../entity/Question';
 
 describe('SurveyController', () => {
   let controller: SurveyController;
@@ -23,7 +24,7 @@ describe('SurveyController', () => {
           useValue: mockAnswersModel,
         },
         {
-          provide: getModelToken(Question.name, "survey"),
+          provide: getRepositoryToken(Question, "survey"),
           useValue: mockQuestionModel,
         },
       ]
@@ -44,7 +45,7 @@ describe('SurveyController', () => {
     it('should return a question', async () => {
       const expectData = mockQuestion;
       const actuall = await controller.getQuestion({ studyId:1 });
-      expect(actuall).toEqual({...expectData, save: expect.any(Function)});
+      expect(actuall).toEqual(expectData);
     });
 
     it('should throw BadRequestException for studyId 6', async () => {

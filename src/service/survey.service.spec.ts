@@ -1,9 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SurveyService } from "./survey.service";
-import { mockQuestion, mockQuestionModel, Question } from "../schemas/question.schemas";
 import { getModelToken } from "@nestjs/mongoose";
 import { cloneDeep } from 'lodash';
 import { Answers, mockAnswer, mockAnswersModel } from "../schemas/answers.shcemas";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { mockQuestion, mockQuestionModel, Question } from "../entity/Question";
 
 describe("SurveyService", () => {
   let service: SurveyService;
@@ -19,7 +20,7 @@ describe("SurveyService", () => {
           useValue: mockAnswersModel,
         },
         {
-          provide: getModelToken(Question.name, "survey"),
+          provide: getRepositoryToken(Question, "survey"),
           useValue: mockQuestionModel,
         },
       ],

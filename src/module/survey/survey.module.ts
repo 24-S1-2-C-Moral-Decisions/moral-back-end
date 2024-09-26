@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Question, QuestionSchema } from '../../schemas/question.schemas';
-import { Answers, AnswersSchema} from '../../schemas/answers.shcemas';
 import { SurveyController } from '../../controller/survey/survey.controller';
 import { ProlificController } from '../../controller/survey/prolific/prolific.controller';
 import { SurveyService } from '../../service/survey.service';
 import { ProlificService } from '../../service/prolific/prolific.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
+import { Question } from '../../entity/Question';
 
 @Module({
     imports: [
@@ -21,7 +19,7 @@ import { Prolific } from '../../entity/Prolific';
         // ),
         TypeOrmModule.forFeature(
             [
-                // Question,
+                Question,
                 // Answers,
                 Prolific
             ],

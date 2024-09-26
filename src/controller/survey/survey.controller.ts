@@ -3,7 +3,7 @@ import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiTags } fro
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { AnswerIdDto, AnswersDto } from '../../module/survey/answers.dto';
 import { SurveyService } from '../..//service/survey.service';
-import { Question } from '../../schemas/question.schemas';
+import { Question } from '../../entity/Question';
 
 
 @Controller('survey')

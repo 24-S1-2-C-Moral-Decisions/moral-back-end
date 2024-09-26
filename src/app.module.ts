@@ -9,6 +9,7 @@ import { PostsModule } from './module/posts/posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from './entity/Prolific';
+import { Question } from './entity/Question';
 
 const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'development' : 'production');
 
@@ -29,7 +30,7 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       url: process.env.DATABASE_URL,
       database: 'survey',
       name: 'survey',
-      entities: [Prolific],
+      entities: [Prolific, Question],
       retryAttempts: 5,
     }),
     // MongooseModule.forRoot(
