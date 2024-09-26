@@ -46,7 +46,7 @@ export class SearchService {
         @InjectConnection('posts') private readonly poetConnection: Connection,
         private readonly cacheService: CacheService
     ) {
-        this.setupTfidfCache();
+        // this.setupTfidfCache();
     }
 
     async setupTfidfCache() {

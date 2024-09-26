@@ -4,6 +4,7 @@ import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { PostDoc } from '../../schemas/post.shcemas';
 import { CacheService } from '../cache/cache.service';
 import { MoralCache } from '../../schemas/cache.shcemas';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -16,6 +17,15 @@ describe('SearchService', () => {
           provide: SearchService,
           useValue: {
             setupTfidfCache: jest.fn()
+          },
+        },
+        {
+          provide: getRepositoryToken(MoralCache, 'cache'),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            deleteOne: jest.fn(),
           },
         },
         {

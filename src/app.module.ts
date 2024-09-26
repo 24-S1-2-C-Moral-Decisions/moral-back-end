@@ -10,7 +10,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from './entity/Prolific';
 import { Question } from './entity/Question';
-import { Answer, AnswerItem } from './entity/Answer';
+import { Answer } from './entity/Answer';
+import { MoralCache } from './entity/Cache';
 
 const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'development' : 'production');
 
@@ -34,27 +35,22 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       entities: [Prolific, Question, Answer],
       retryAttempts: 5,
     }),
-    // MongooseModule.forRoot(
-    //   process.env.DATABASE_URL, 
-    //   {
-    //     dbName: 'posts',
-    //     connectionName: 'posts',
-    //   }
-    // ),
-    // MongooseModule.forRoot(
-    //   process.env.DATABASE_URL, 
-    //   {
-    //     dbName: 'survey',
-    //     connectionName: 'survey',
-    //   }
-    // ),
-    // MongooseModule.forRoot(
-    //   process.env.DATABASE_URL, 
-    //   {
-    //     dbName: 'cache',
-    //     connectionName: 'cache',
-    //   }
-    // ),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.DATABASE_URL,
+      database: 'posts',
+      name: 'posts',
+      entities: [],
+      retryAttempts: 5,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mongodb',
+      url: process.env.DATABASE_URL,
+      database: 'cache',
+      name: 'cache',
+      entities: [MoralCache],
+      retryAttempts: 5,
+    }),
     SurveyModule,
     // PostsModule
   ],

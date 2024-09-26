@@ -6,6 +6,7 @@ import { SearchService } from '../../service/search/search.service';
 import { PostDoc } from '../../schemas/post.shcemas';
 import { CacheService } from '../../service/cache/cache.service';
 import { MoralCache } from '../../schemas/cache.shcemas';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('SearchController', () => {
   let controller: SearchController;
@@ -20,6 +21,15 @@ describe('SearchController', () => {
         },
         PostService,
         CacheService,
+        {
+          provide: getRepositoryToken(MoralCache, 'cache'),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            deleteOne: jest.fn(),
+          },
+        },
         {
           provide: getModelToken(MoralCache.name, 'cache'),
           useValue: {},

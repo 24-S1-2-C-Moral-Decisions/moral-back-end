@@ -46,7 +46,6 @@ describe('SurveyController', () => {
           useValue: {
             create: jest.fn().mockResolvedValue(mockAnswer),
             findOne: jest.fn().mockImplementation((param) => {
-              console.log(param);
               if (param.where._id.toString() === mockAnswer._id) {
                 return mockAnswer;
               } else {
