@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyController } from './survey.controller';
 import { SurveyService } from '../../service/survey.service';
-import { Answers, mockAnswer, mockAnswersModel } from '../../schemas/answers.shcemas';
 import {ValidationPipe} from '@nestjs/common';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
 import { getModelToken } from '@nestjs/mongoose';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Question } from '../../entity/Question';
+import { Answer, mockAnswer } from '../../entity/Answer';
 
 const mockQuestion: Question = {
   _id: "atcfwx",
@@ -42,8 +42,19 @@ describe('SurveyController', () => {
       providers: [
         SurveyService,
         {
-          provide: getModelToken(Answers.name, "survey"),
-          useValue: mockAnswersModel,
+          provide: getRepositoryToken(Answer, "survey"),
+          useValue: {
+            create: jest.fn().mockResolvedValue(mockAnswer),
+            findOne: jest.fn().mockImplementation((param) => {
+              console.log(param);
+              if (param.where._id.toString() === mockAnswer._id) {
+                return mockAnswer;
+              } else {
+                return null;
+              }
+            }),
+            save: jest.fn().mockResolvedValue(mockAnswer),
+          },
         },
         {
           provide: getRepositoryToken(Question, "survey"),
@@ -88,20 +99,20 @@ describe('SurveyController', () => {
 
   describe('postAnswers', () => {
     it('should return question id', async () => {
-      const actuall = await controller.postAnswers(mockAnswer);
-      expect(actuall).toEqual(mockAnswer.id.toString());
+      const actuall = await controller.postAnswers({...mockAnswer});
+      expect(actuall).toEqual(mockAnswer._id.toString());
     });
   });
 
   describe('getAnswersById', () => {
     it('should return answers', async () => {
-      const actuall = await controller.getAnswersById(mockAnswer.id);
+      const actuall = await controller.getAnswersById(mockAnswer._id.toString());
       expect(actuall).toEqual(mockAnswer);
     });
 
     // invalid answerId
-    it ('should return null', async () => {
-      expect(await controller.getAnswersById({ id: 'xxx' })).toBeNull();
+    it ('should throw', async () => {
+      expect(controller.getAnswersById('xxx')).rejects.toThrow();
     });
   });
 });

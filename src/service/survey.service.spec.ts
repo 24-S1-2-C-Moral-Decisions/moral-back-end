@@ -2,9 +2,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SurveyService } from "./survey.service";
 import { getModelToken } from "@nestjs/mongoose";
 import { cloneDeep } from 'lodash';
-import { Answers, mockAnswer, mockAnswersModel } from "../schemas/answers.shcemas";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockQuestion, Question } from "../entity/Question";
+import { Answer, mockAnswer } from "../entity/Answer";
+import { ObjectId } from "mongodb";
 
 describe("SurveyService", () => {
   let service: SurveyService;
@@ -16,16 +17,27 @@ describe("SurveyService", () => {
       providers: [
         SurveyService,
         {
-          provide: getModelToken(Answers.name, "survey"),
-          useValue: mockAnswersModel,
-        },
-        {
           provide: getRepositoryToken(Question, "survey"),
           useValue: {
             aggregate: jest.fn().mockReturnValue({
                 toArray: jest.fn().mockResolvedValue([mockQuestion])
             }),
             updateOne: jest.fn().mockResolvedValue(mockQuestion),
+          },
+        },
+        {
+          provide: getRepositoryToken(Answer, "survey"),
+          useValue: {
+            create: jest.fn().mockResolvedValue(mockAnswer),
+            findOne: jest.fn().mockImplementation((param) => {
+              console.log(param);
+              if (param.where._id.toString() === mockAnswer._id) {
+                return mockAnswer;
+              } else {
+                return null;
+              }
+            }),
+            save: jest.fn().mockResolvedValue(mockAnswer),
           },
         },
       ],
@@ -67,24 +79,23 @@ describe("SurveyService", () => {
   describe("createAnswers", () => {
     it("should save the answers", async () => {
       const result = await service.createAnswers(mockAnswer);
-      expect(result).toBe(mockAnswer.id.toString());
+      expect(result).toBe(mockAnswer._id);
     });
   });
 
   describe("findAnswersById", () => {
     it("should return the answers", async () => {
-      const result = await service.findAnswersById(mockAnswer.id);
+      const result = await service.findAnswersById(mockAnswer._id);
       expect(result).toEqual(mockAnswer);
     });
 
     it("should return null if the answer is not found", async () => {
-      const result = await service.findAnswersById({ id: "60f7c72b8f3f5e001f8c84b4" });
+      const result = await service.findAnswersById("60f7c72b8f3f5e001f8c84b4");
       expect(result).toBeNull();
     });
 
-    it("should return null if id is not correct", async () => {
-      const result = await service.findAnswersById({ id: "xxx" });
-      expect(result).toBeNull();
+    it("should throw if id is not correct", async () => {
+      expect(service.findAnswersById("xxx")).rejects.toThrow();
     });
 
     it("should throw an error if decisionMaking is undefined", async () => {

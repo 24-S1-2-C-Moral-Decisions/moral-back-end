@@ -56,8 +56,8 @@ export class SurveyController {
     })
     @ApiCreatedResponse({ description: 'Find the answer by id' })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
-    async getAnswersById(@Query() answerId: {answerId: string}) {
-        return await this.surveyService.findAnswersById(answerId.answerId).then((answers) => {
+    async getAnswersById(@Query() answerId: string) {
+        return await this.surveyService.findAnswersById(answerId).then((answers) => {
             return answers;
         }).catch((err) => {
             Logger.debug(err);

@@ -6,6 +6,9 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, Max, Min } from "class-val
 
 // @Entity('answer_item')
 class _AnswerItem {
+    // @ObjectIdColumn()
+    // _id: ObjectId;
+
     @ApiProperty({
         description: 'Whether user think it is an asshole or not',
         required: true,
@@ -13,9 +16,6 @@ class _AnswerItem {
     })
     @IsNotEmpty()
     @IsBoolean()
-    // @ObjectIdColumn()
-    // _id: ObjectId;
-
     // @Column({
     //     type: 'boolean',
     //     nullable: false,
@@ -39,31 +39,20 @@ class _AnswerItem {
     rating: number;
 }
 
-// this class is only for swagger documentation
-class _QuestionType{
-    @ApiProperty({
-        description: 'The question',
-        required: true,
-        example: 'atcfwx'
-    })
-    @IsNotEmpty()
-    _id: string;
-}
-
 @Entity('answer_item')
 export class AnswerItem {
 
     @ObjectIdColumn()
-    _id: ObjectId;
+    _id?: ObjectId;
 
     @ApiProperty({
         description: 'The question',
         required: true,
-        type: _QuestionType,
+        type: String,
+        example: 'atcfwx'
     })
     @IsNotEmpty()
-    @ManyToMany(() => Question, { nullable: false })
-    question: Question;
+    questionId: string;
 
     @ApiProperty({
         description: 'The indevidual answer',
@@ -92,31 +81,21 @@ export class AnswerItem {
     comment: string;
 }
 
-// this class is only for swagger documentation
-class _ProlificType{
-    @ApiProperty({
-        description: 'The prolific id',
-        required: true,
-        example: 'prolific-Xinlong'
-    })
-    @IsNotEmpty()
-    prolificId: string;
-}
-
 @Entity("answer")
 export class Answer {
 
     @ObjectIdColumn()
-    _id: ObjectId;
+    _id: string;
 
     @IsNotEmpty()
     @ApiProperty({
         description: 'The prolific id of the user',
         required: true,
-        type: _ProlificType
+        example: 'prolific-Xinlong',
+        type: String
     })
-    @ManyToOne(() => Prolific, { nullable: false })
-    prolific: Prolific;
+    @Column({ type: 'string', nullable: false })
+    prolificId: string;
 
     @ApiProperty({
         description: 'The study id',
@@ -128,7 +107,7 @@ export class Answer {
     @Column({ type: 'number', nullable: false})
     studyId: number;
 
-    @ApiProperty({ type: AnswerItem })
+    @ApiProperty({ type: AnswerItem, isArray: true })
     @IsNotEmpty()
     @Column("simple-array", { nullable: false })
     answerDetail: AnswerItem[];
@@ -175,3 +154,37 @@ export class Answer {
     @Column({ type: 'bigint', nullable: false })
     time: number;
 }
+
+export const mockAnswer = {
+    _id: "66f4d616e7642a3a29ffd25c",
+    studyId: 1,
+    prolificId: "prolific-Xinlong",
+    answerDetail: [
+        {
+            questionId: "atcfwx",
+            individualAnswer: {
+                isAsshole: true,
+                rating: 1
+            },
+            groupAnswer: {
+                isAsshole: true,
+                rating: 1
+            },
+            comment: "This is a comment",
+        }
+    ],
+    comment: "This is a comment",
+    decisionMaking: [
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5
+    ],
+    personalityChoice: [
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5,
+      1, 2, 3, 4, 5
+    ],
+    time: 123456789
+};

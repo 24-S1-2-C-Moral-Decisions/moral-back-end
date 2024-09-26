@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { StudyIdDto } from '../module/survey/studyId.dto';
 import { Question } from '../entity/Question';
-import { InjectRepository } from '@nestjs/typeorm';
-import { MongoRepository } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { EntityManager, MongoRepository } from 'typeorm';
 import { Answer } from '../entity/Answer';
 import { ObjectId } from 'mongodb';
 
@@ -62,7 +62,10 @@ export class SurveyService {
     }
 
     async findAnswersById(id: string): Promise<Answer> {
-        return await this.answerRepository.findOneBy({ _id: new ObjectId(id) });
+        return await this.answerRepository.findOne({
+            where: { _id: new ObjectId(id) },
+            relations: ['prolific'],
+        });
     }
 
     // async initCount() {
