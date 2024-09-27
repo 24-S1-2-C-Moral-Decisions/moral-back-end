@@ -114,6 +114,7 @@ export class PostDocDto {
     selftext: string;
 
     isRelevantTopic?(topic: string): boolean{
+        if (topic === 'all') return true;
         return this.topics.some((t) => t.topic === topic);
     }
 }
