@@ -83,8 +83,8 @@ export class SearchService {
                     worker.on('message', (message) => {
                         Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
                         for (const post of message.documents) {
-                            if (!post.selftext){
-                                documentCount--;
+                            if (post.selftext === undefined) {
+                                documentCount -= 1;
                                 continue;
                             }
                             this._tfidfData.tfidf.addDocument(post.selftext, post._id);
@@ -120,6 +120,7 @@ export class SearchService {
     async search(topic:string, query: string, limit: number = 10): Promise<PostSummary[]> {
         const similerList = [];
         this.tfidf.tfidfs(query, (i, measure) => {
+            if (measure === 0) return;
             similerList.push({ id: this.tfidf.documents[i], measure });
         });
 

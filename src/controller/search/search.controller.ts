@@ -13,6 +13,21 @@ export class SearchController {
         private searchService: SearchService,
         private postService: PostService
     ) {}
+
+    mockData:PostSummary = {
+        id: '1',
+        title: 'title',
+        verdict: 'INFO',
+        topics: [
+            'topic1',
+            'topic2',
+            'topic3',
+            'topic4',
+        ],
+        selftext: 'selftext',
+        YTA: 1,
+        NTA: 2,
+    };
     
     @Get()
     @ApiOkResponse({

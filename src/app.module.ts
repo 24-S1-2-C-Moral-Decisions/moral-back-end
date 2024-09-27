@@ -23,7 +23,7 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       isGlobal: true,
       envFilePath : [envFilePath, '.env/.env'],
       validationSchema: Joi.object({
-        BACKEND_PORT: Joi.number().default(3000),
+        PORT: Joi.number().default(3000),
         DATABASE_URL: Joi.string().required(),
         TFIDF_WORKER_NUM: Joi.number().required(),
         DEFAULT_CACHE_TTL: Joi.number().required(),
