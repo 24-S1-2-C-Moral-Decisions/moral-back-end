@@ -13,11 +13,13 @@ const { MongoClient } = require('mongodb');
         const postSummaryCollection = postDb.collection(workerData.postSummaryCollectionName);
         const submissionCollection = redditDb.collection(workerData.submissionCollectionName);
 
-        summaryList = [];
+        await postSummaryCollection.createIndex({id: 1}, {unique: true});
+
+        let summaryList = [];
+        let insertedCount = 0;
         const batchSize = 200;
-        console.log(`Worker ${workerData.workerId} is processing documents from ${workerData.skip} to ${workerData.skip + workerData.batchSize}`);
-        for (let i = workerData.skip; i < workerData.skip + workerData.batchSize; i+=batchSize) {
-            for await (const post of allCollection.find().skip(i).limit(batchSize)) {
+        for (let i = 0; i < workerData.batchSize; i+= batchSize) {
+            for await (const post of allCollection.find().skip(workerData.skip + i).limit(i + batchSize  > workerData.batchSize ? workerData.batchSize - i : batchSize )) {
                 const submission = await submissionCollection.findOne({_id: post._id});
                 const postSummary = {
                     id: post._id,
@@ -38,13 +40,14 @@ const { MongoClient } = require('mongodb');
                 summaryList.push(postSummary);
             }
             await postSummaryCollection.insertMany(summaryList);
+            insertedCount += summaryList.length;
             summaryList = [];
-            console.log(`Worker ${workerData.workerId} is processing ${i - workerData.skip + batchSize} / ${workerData.batchSize} documents`);
+            console.log(`Worker ${workerData.workerId} is processing ${insertedCount} / ${workerData.batchSize} documents`);
         }
         
         // send the remaining documents
         parentPort?.postMessage({
-            res:"success"
+            insertedCount
         });
 
     } finally {
