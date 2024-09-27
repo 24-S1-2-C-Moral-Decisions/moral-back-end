@@ -1,12 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as natural from 'natural';
 import { CacheService } from '../cache/cache.service';
-import { Connection, Model } from 'mongoose';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { PostDocDto } from '../../module/posts/post.dto';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { PostSummary } from '../../entity/PostSummary';
-import { EntityManager, In, Repository } from 'typeorm';
 import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
 import { PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';

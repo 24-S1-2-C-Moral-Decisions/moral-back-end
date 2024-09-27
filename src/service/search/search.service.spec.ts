@@ -1,11 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SearchService } from './search.service';
-import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
-import { PostDoc } from '../../schemas/post.shcemas';
 import { CacheService } from '../cache/cache.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MoralCache } from '../../entity/Cache';
-import { CacheConnectionName, PostConnectionName } from '../../utils/ConstantValue';
+import { CacheConnectionName } from '../../utils/ConstantValue';
 
 const mockSearchService = {
   setupTfidfCache: jest.fn().mockResolvedValue({}),

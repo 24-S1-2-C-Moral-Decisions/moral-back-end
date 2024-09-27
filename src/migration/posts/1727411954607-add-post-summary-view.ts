@@ -1,8 +1,6 @@
 import { MigrationInterface } from "typeorm";
 import { MongoQueryRunner } from "typeorm/driver/mongodb/MongoQueryRunner";
-import { PostSummary } from "../../entity/PostSummary";
 import { PostSummaryBuildHelper } from "../../utils/posts-summery-builder-helper";
-import { profile } from "console";
 import { AllCollectionName, PostsDBName, PostSummaryCollectionName, RedditDBName, SubmissionCollectionName } from "../../utils/ConstantValue";
 
 export class AddPostSummaryView1727411954607 implements MigrationInterface {

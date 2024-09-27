@@ -6,7 +6,7 @@ import { ProlificService } from '../../service/prolific/prolific.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
 import { Question } from '../../entity/Question';
-import { Answer, AnswerItem } from '../../entity/Answer';
+import { Answer } from '../../entity/Answer';
 import { SurveyConnectionName } from '../../utils/ConstantValue';
 
 @Module({

@@ -6,7 +6,6 @@ import * as Joi from '@hapi/joi';
 import { RateLimiterMiddleware } from './rate-limiter.middleware';
 import { SurveyModule } from './module/survey/survey.module';
 import { PostsModule } from './module/posts/posts.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from './entity/Prolific';
 import { Question } from './entity/Question';

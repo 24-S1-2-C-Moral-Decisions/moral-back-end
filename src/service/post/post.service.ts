@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
-import { PostDocDto } from '../../module/posts/post.dto';
 import { PostConnectionName, PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
 import { PostSummary } from '../../entity/PostSummary';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, MongoRepository, Repository } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 
 @Injectable()

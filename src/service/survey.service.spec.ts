@@ -1,11 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SurveyService } from "./survey.service";
-import { getModelToken } from "@nestjs/mongoose";
 import { cloneDeep } from 'lodash';
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockQuestion, Question } from "../entity/Question";
 import { Answer, mockAnswer } from "../entity/Answer";
-import { ObjectId } from "mongodb";
 
 describe("SurveyService", () => {
   let service: SurveyService;

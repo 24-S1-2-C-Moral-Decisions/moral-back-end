@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProlificService } from './prolific.service';
-import { getModelToken } from '@nestjs/mongoose';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
 import { SurveyConnectionName } from '../../utils/ConstantValue';

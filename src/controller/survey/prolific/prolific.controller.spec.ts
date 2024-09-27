@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProlificController } from './prolific.controller';
 import { ProlificService } from '../../../service/prolific/prolific.service';
-import { Prolific } from '../../../entity/Prolific';
 
 describe('ProlificController', () => {
   let controller: ProlificController;

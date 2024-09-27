@@ -3,7 +3,6 @@ import { SurveyController } from './survey.controller';
 import { SurveyService } from '../../service/survey.service';
 import {ValidationPipe} from '@nestjs/common';
 import { StudyIdDto } from '../../module/survey/studyId.dto';
-import { getModelToken } from '@nestjs/mongoose';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Question } from '../../entity/Question';
 import { Answer, mockAnswer } from '../../entity/Answer';

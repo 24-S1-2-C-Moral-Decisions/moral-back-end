@@ -1,6 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, ObjectId, ObjectIdColumn } from "typeorm"
-import { Prolific } from "./Prolific";
-import { Question } from "./Question";
+import { Column, Entity, ObjectId, ObjectIdColumn } from "typeorm"
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, Max, Min } from "class-validator";
 

@@ -1,10 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostService } from './post.service';
-import { getConnectionToken } from '@nestjs/mongoose';
 import { PostConnectionName, PostSummaryCollectionName } from '../../utils/ConstantValue';
 import { getDataSourceToken } from '@nestjs/typeorm';
-import { find } from 'rxjs';
-import { PostSummary } from '../../entity/PostSummary';
 
 describe('PostService', () => {
   let service: PostService;

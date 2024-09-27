@@ -1,5 +1,4 @@
 import { Worker } from 'worker_threads';
-import { PostSummary } from '../entity/PostSummary';
 
 export class PostSummaryBuildHelper {
     static getWorker(workerData: {

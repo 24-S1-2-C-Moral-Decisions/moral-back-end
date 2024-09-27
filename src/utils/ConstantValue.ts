@@ -1,4 +1,3 @@
-import exp from "constants";
 
 export const DatabaseType = 'mongodb';
 export const PostsDBName = 'posts';
