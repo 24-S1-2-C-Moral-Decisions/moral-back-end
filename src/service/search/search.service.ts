@@ -5,6 +5,8 @@ import { PostSummary } from '../../entity/PostSummary';
 import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
 import { PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SearchService {
