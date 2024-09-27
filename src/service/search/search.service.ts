@@ -135,6 +135,7 @@ export class SearchService {
     async search(topic:string, query: string, limit: number = 10): Promise<PostDocDto[]> {
         const similerList = [];
         this.tfidf.tfidfs(query, (i, measure) => {
+            if (measure === 0) return;
             similerList.push({ id: this.tfidf.documents[i], measure });
         });
 
