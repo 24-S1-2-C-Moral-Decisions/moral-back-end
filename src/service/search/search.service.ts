@@ -101,7 +101,7 @@ export class SearchService {
                             getOrCreateTopicTfidf(post.topic_1).addDocument(post.selftext, post._id);
                             getOrCreateTopicTfidf(post.topic_2).addDocument(post.selftext, post._id);
                             getOrCreateTopicTfidf(post.topic_3).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_3).addDocument(post.selftext, post._id);
+                            getOrCreateTopicTfidf(post.topic_4).addDocument(post.selftext, post._id);
                             getOrCreateTopicTfidf('all').addDocument(post.selftext, post._id);
                         }
                         documentCount += message.documents.length;
