@@ -25,7 +25,9 @@ export class SearchController {
         ],
         num_comments: 10,
         resolved_verdict: 'INFO',
-        selftext: 'selftext'
+        selftext: 'selftext',
+        YTA: 1,
+        NTA: 2,
     };
     
     @Get()

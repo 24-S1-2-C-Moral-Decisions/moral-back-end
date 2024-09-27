@@ -86,6 +86,18 @@ export class PostDoc extends Document {
     type: String
   })
   selftext: string;
+
+  @Prop({
+    required: true,
+    type: Number
+  })
+  YTA: number;
+
+  @Prop({
+    required: true,
+    type: Number
+  })
+  NTA: number;
 }
 
 export const PostDocSchema = SchemaFactory.createForClass(PostDoc);

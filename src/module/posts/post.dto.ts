@@ -21,6 +21,8 @@ type PostDocDtoType = {
     num_comments: number;
     resolved_verdict: string;
     selftext: string;
+    YTA: number;
+    NTA: number;
 };
 
 export class PostDocDto {
@@ -37,6 +39,8 @@ export class PostDocDto {
         this.num_comments = data.num_comments;
         this.resolved_verdict = data.resolved_verdict;
         this.selftext = data.selftext;
+        this.YTA = data.YTA;
+        this.NTA = data.NTA;
     }
 
     @ApiProperty({
@@ -112,6 +116,26 @@ export class PostDocDto {
     @IsNotEmpty()
     @IsString()
     selftext: string;
+
+    @ApiProperty({
+        description: 'The number prople think YTA of the post',
+        type: Number,
+        required: false,
+        example: 10
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    YTA: number;
+
+    @ApiProperty({
+        description: 'The number prople think NTA of the post',
+        type: Number,
+        required: false,
+        example: 10
+    })
+    @IsNotEmpty()
+    @IsNumber()
+    NTA: number;
 
     isRelevantTopic?(topic: string): boolean{
         if (topic === 'all') return true;

@@ -41,7 +41,9 @@ export class PostService {
                     topic_4_p: doc.topic_4_p,
                     num_comments: doc.num_comments,
                     resolved_verdict: doc.resolved_verdict,
-                    selftext: doc.selftext
+                    selftext: doc.selftext,
+                    YTA: doc.YTA,
+                    NTA: doc.NTA,
                 });
             })
         );
