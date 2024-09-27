@@ -4,8 +4,12 @@ import { CacheService } from '../cache/cache.service';
 import { Connection, Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { PostDocDto } from '../../module/posts/post.dto';
-import { PostDoc } from '../../schemas/post.shcemas';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { PostSummary } from '../../entity/PostSummary';
+import { EntityManager, In, Repository } from 'typeorm';
+import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
+import { PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
 
 @Injectable()
 export class SearchService {
@@ -42,14 +46,15 @@ export class SearchService {
     }
 
     constructor(
-        @InjectModel(PostDoc.name, 'posts') private postModel: Model<PostDoc>,
-        @InjectConnection('posts') private readonly poetConnection: Connection,
+        @InjectRepository(PostSummary, "posts") private postSummaryRepository: Repository<PostSummary>,
+        @InjectRepository(PostMateData, "posts") private postMateDataRepository: Repository<PostMateData>,
         private readonly cacheService: CacheService
     ) {
-        // this.setupTfidfCache();
+        this.setupTfidfCache();
     }
 
-    async setupTfidfCache() {
+    private async setupTfidfCache() {
+        console.log('Setting up tfidf cache');
         let documentCount = 0;
         const startTime = performance.now();
 
@@ -58,24 +63,7 @@ export class SearchService {
 
         this.tfidf = new natural.TfIdf();
 
-        // const collection = this.poetConnection.collection('all');
-        // let documentList = [];
-        // for await (const post of collection.find()){
-        //     documentList.push(post);
-        //     documentCount++;
-        //     if (documentCount % 1000 == 0) {
-        //         Logger.log(`Adding ${documentList.length} document to tfidf cache`, "SearchService");
-        //         for (const post of documentList) {
-        //             this._tfidfData.tfidf.addDocument(post.selftext, post._id);
-        //         }
-        //         documentList = [];
-        //     }
-        // }
-        // this.building = false;
-        // Logger.log(`Tfidf cache setup complete ${documentCount} doucuments in ${performance.now() - startTime} ms`, "SearchService");
-
-
-        const totalDocuments = await this.poetConnection.collection('all').countDocuments();
+        const totalDocuments = await this.postMateDataRepository.count();
         const numWorkers = parseInt(process.env.TFIDF_WORKER_NUM ?? '1');
         const batchSize:number = Math.ceil(totalDocuments / numWorkers);
         
@@ -88,18 +76,19 @@ export class SearchService {
                     const worker = TfIdfBuildHelper.getWorker(
                         {
                             skip,
-                            limit: batchSize,
+                            limit: batchSize + skip > totalDocuments ? totalDocuments - skip : batchSize,
                             postConnectionUri: process.env.DATABASE_URL,
-                            dbName: 'posts',
-                            collectionName: 'all'
+                            dbName: PostsDBName,
+                            collectionName: PostSummaryCollectionName
                         }
                     );
     
                     worker.on('message', (message) => {
                         Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
                         for (const post of message.documents) {
-                            if (!post.selftext) {
-                                console.log(post._id);
+                            if (!post.selftext){
+                                documentCount--;
+                                continue;
                             }
                             this._tfidfData.tfidf.addDocument(post.selftext, post._id);
                         }
@@ -131,7 +120,7 @@ export class SearchService {
         });
     }
 
-    async search(topic:string, query: string, limit: number = 10): Promise<PostDocDto[]> {
+    async search(topic:string, query: string, limit: number = 10): Promise<PostSummary[]> {
         const similerList = [];
         this.tfidf.tfidfs(query, (i, measure) => {
             similerList.push({ id: this.tfidf.documents[i], measure });
@@ -143,13 +132,12 @@ export class SearchService {
             return result.id.__key;
         });
 
-        const res: PostDocDto[] = [];
+        const res: PostSummary[] = [];
         for (const postId of postIds) {
-            const data = await this.postModel.findById(postId);
-            if (!data)
+            const post = await this.postSummaryRepository.findOne(postId);
+            if (!post)
                 continue;
-            const post = new PostDocDto(data);
-            if (topic === undefined || post.isRelevantTopic(topic)) {
+            if (topic === undefined || topic == 'all' || post.topics.includes(topic)) {
                 res.push(post);
                 if (res.length >= limit) {
                     break;

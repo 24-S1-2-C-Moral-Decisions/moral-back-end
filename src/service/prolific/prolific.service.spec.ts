@@ -3,6 +3,7 @@ import { ProlificService } from './prolific.service';
 import { getModelToken } from '@nestjs/mongoose';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
+import { SurveyConnectionName } from '../../utils/ConstantValue';
 
 describe('ProlificService', () => {
   let service: ProlificService;
@@ -12,7 +13,7 @@ describe('ProlificService', () => {
       providers: [
         ProlificService,
         {
-          provide: getRepositoryToken(Prolific, 'survey'),
+          provide: getRepositoryToken(Prolific, SurveyConnectionName),
           useValue: {
             findOneBy: jest.fn().mockResolvedValue(expectData),
             save: jest.fn().mockResolvedValue(expectData),
@@ -22,13 +23,6 @@ describe('ProlificService', () => {
           }
         },
       ],
-    })
-    .useMocker((token) => {
-      if (token === getModelToken(Prolific.name, 'survey')) {
-        return {
-          findOneAndUpdate: jest.fn().mockResolvedValue(expectData),
-        };
-      }
     })
     .compile();
 

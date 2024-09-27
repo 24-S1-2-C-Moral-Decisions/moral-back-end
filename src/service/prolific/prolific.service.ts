@@ -4,11 +4,12 @@ import { Model } from 'mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
 import { Repository } from 'typeorm';
+import { SurveyConnectionName } from '../../utils/ConstantValue';
 
 @Injectable()
 export class ProlificService {
     constructor(
-        @InjectRepository(Prolific, 'survey') private prolificRepository: Repository<Prolific>,
+        @InjectRepository(Prolific, SurveyConnectionName) private prolificRepository: Repository<Prolific>,
     ) { }
 
     async createOrUpdate(prolificId: string, prolificData: Partial<Prolific>): Promise<Prolific> {

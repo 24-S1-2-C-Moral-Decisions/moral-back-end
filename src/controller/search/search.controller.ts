@@ -4,6 +4,7 @@ import { SearchOptionDto } from '../../module/search-option.dto';
 import { PostDocDto } from '../../module/posts/post.dto';
 import { SearchService, TfIdfBuildingException } from '../../service/search/search.service';
 import { PostService } from '../../service/post/post.service';
+import { PostSummary } from '../../entity/PostSummary';
 
 @Controller('search')
 @ApiTags('search')
@@ -36,7 +37,7 @@ export class SearchController {
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     @ApiServiceUnavailableResponse({ description: 'Server is rebuilding searching cache, please waiting' })
     async searchPost(@Query() searchOption: SearchOptionDto){
-        let res: PostDocDto[] = [];
+        let res: PostSummary[] = [];
         try {
             if (searchOption.keywords !== undefined){
                 res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);

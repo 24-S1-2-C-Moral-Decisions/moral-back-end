@@ -3,28 +3,33 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SearchController } from '../../controller/search/search.controller';
 import { PostController } from '../../controller/post/post.controller';
 import { PostService } from '../../service/post/post.service';
-import { MoralCache, MoralCacheSchema } from '../../schemas/cache.shcemas';
 import { CacheService } from '../../service/cache/cache.service';
 import { SearchService } from '../../service/search/search.service';
 import { PostDoc, PostDocSchema } from '../../schemas/post.shcemas';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostMateData } from '../../entity/PostMateData';
+import { PostSummary } from '../../entity/PostSummary';
+import { MoralCache } from '../../entity/Cache';
+import { EntityManager } from 'typeorm';
+import { CacheConnectionName, PostConnectionName } from '../../utils/ConstantValue';
 
 @Module({
     imports: [
-        MongooseModule.forFeature(
+        TypeOrmModule.forFeature(
             [
-                // { name: Question.name, schema: QuestionSchema}
-                { name: MoralCache.name , schema: MoralCacheSchema}
-            ], 
-            'cache'
+                PostMateData,
+                PostSummary
+            ],
+            PostConnectionName
         ),
-        MongooseModule.forFeature(
+        TypeOrmModule.forFeature(
             [
-                { name: PostDoc.name , schema: PostDocSchema}
-            ], 
-            'posts'
+                MoralCache,
+            ],
+            CacheConnectionName
         ),
     ],
     controllers: [SearchController, PostController],
-    providers: [PostService, CacheService, SearchService],
+    providers: [CacheService, SearchService, PostService],
 })
 export class PostsModule {}

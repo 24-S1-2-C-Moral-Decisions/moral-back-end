@@ -7,24 +7,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Prolific } from '../../entity/Prolific';
 import { Question } from '../../entity/Question';
 import { Answer, AnswerItem } from '../../entity/Answer';
+import { SurveyConnectionName } from '../../utils/ConstantValue';
 
 @Module({
     imports: [
-        // MongooseModule.forFeature(
-        //     [
-        //         { name: Question.name, schema: QuestionSchema},
-        //         { name: Answers.name, schema: AnswersSchema},
-        //         { name: Prolific.name, schema: ProlificSchema},
-        //     ],
-        //     'survey'
-        // ),
         TypeOrmModule.forFeature(
             [
                 Question,
                 Answer,
                 Prolific
             ],
-            'survey'
+            SurveyConnectionName
         ),
     ],
     controllers: [SurveyController, ProlificController],

@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CacheService } from './cache.service';
-import { MoralCache } from '../../schemas/cache.shcemas';
-import { getModelToken } from '@nestjs/mongoose';
-import e from 'express';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { expectCache } from '../../entity/Cache';
-import { cp } from 'fs';
+import { expectCache, MoralCache } from '../../entity/Cache';
+import { CacheConnectionName } from '../../utils/ConstantValue';
 
 const MoralCacheMockRepository = {
   findOne: jest.fn().mockImplementation(({where: {key}}) => {
@@ -25,7 +22,7 @@ describe('CacheService', () => {
       providers: [
         CacheService,
         {
-          provide: getRepositoryToken(MoralCache, 'cache'),
+          provide: getRepositoryToken(MoralCache, CacheConnectionName),
           useValue: MoralCacheMockRepository,
         }
       ],

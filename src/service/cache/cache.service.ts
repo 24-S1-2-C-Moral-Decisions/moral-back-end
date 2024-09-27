@@ -4,11 +4,12 @@ import { Model } from 'mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MoralCache } from '../../entity/Cache';
+import { CacheConnectionName } from '../../utils/ConstantValue';
 
 @Injectable()
 export class CacheService {
     constructor(
-        @InjectRepository(MoralCache, 'cache') private cacheRepository: Repository<MoralCache>,
+        @InjectRepository(MoralCache, CacheConnectionName) private cacheRepository: Repository<MoralCache>,
     ) {}
 
     async getCache(key: string): Promise<Record<string, unknown>> {
@@ -16,15 +17,10 @@ export class CacheService {
             where: { key },
         });
 
-        console.log(cacheData);
-
         if (cacheData && cacheData.expiresAt > new Date()) {
-            console.log('cache hit');
             return JSON.parse(cacheData.value);
         }
-        console.log('cache miss');
         if (cacheData) {
-            console.log('cache expired');
             this.deleteCache(key);
         };
         return undefined;
@@ -39,7 +35,6 @@ export class CacheService {
     }
 
     deleteCache(key: string) {
-        console.log('delete cache');
         this.cacheRepository.delete({ key });
     }
 }

@@ -12,6 +12,9 @@ import { Prolific } from './entity/Prolific';
 import { Question } from './entity/Question';
 import { Answer } from './entity/Answer';
 import { MoralCache } from './entity/Cache';
+import { PostMateData } from './entity/PostMateData';
+import { PostSummary } from './entity/PostSummary';
+import { CacheConnectionName, CacheDBName, DatabaseType, PostConnectionName, PostsDBName, SurveyConnectionName, SurveyDBName } from './utils/ConstantValue';
 
 const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'development' : 'production');
 
@@ -28,31 +31,31 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
       }),
     }),
     TypeOrmModule.forRoot({
-      type: 'mongodb',
+      type: DatabaseType,
       url: process.env.DATABASE_URL,
-      database: 'survey',
-      name: 'survey',
+      database: SurveyDBName,
+      name: SurveyConnectionName,
       entities: [Prolific, Question, Answer],
       retryAttempts: 5,
     }),
     TypeOrmModule.forRoot({
-      type: 'mongodb',
+      type: DatabaseType,
       url: process.env.DATABASE_URL,
-      database: 'posts',
-      name: 'posts',
-      entities: [],
+      database: PostsDBName,
+      name: PostConnectionName,
+      entities: [PostMateData, PostSummary],
       retryAttempts: 5,
     }),
     TypeOrmModule.forRoot({
-      type: 'mongodb',
+      type: DatabaseType,
       url: process.env.DATABASE_URL,
-      database: 'cache',
-      name: 'cache',
+      database: CacheDBName,
+      name: CacheConnectionName,
       entities: [MoralCache],
       retryAttempts: 5,
     }),
     SurveyModule,
-    // PostsModule
+    PostsModule
   ],
   controllers: [AppController],
   providers: [AppService],

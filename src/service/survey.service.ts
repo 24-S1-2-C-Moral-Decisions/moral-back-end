@@ -5,12 +5,13 @@ import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, MongoRepository } from 'typeorm';
 import { Answer } from '../entity/Answer';
 import { ObjectId } from 'mongodb';
+import { SurveyConnectionName } from '../utils/ConstantValue';
 
 @Injectable()
 export class SurveyService {
     constructor(
-        @InjectRepository(Answer, 'survey') private answerRepository: MongoRepository<Answer>,
-        @InjectRepository(Question, 'survey') private questionRepository: MongoRepository<Question>,
+        @InjectRepository(Answer, SurveyConnectionName) private answerRepository: MongoRepository<Answer>,
+        @InjectRepository(Question, SurveyConnectionName) private questionRepository: MongoRepository<Question>,
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {

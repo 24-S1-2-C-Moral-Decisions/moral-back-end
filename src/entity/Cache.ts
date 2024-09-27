@@ -1,8 +1,12 @@
-import { Column, Entity, PrimaryColumn } from "typeorm"
+import { ObjectId } from "mongodb";
+import { Column, Entity, ObjectIdColumn, PrimaryColumn } from "typeorm"
 
 @Entity()
 export class MoralCache {
-    @PrimaryColumn()
+    @ObjectIdColumn()
+    _id: ObjectId;
+
+    @PrimaryColumn('string')
     key: string;
 
     @Column()
