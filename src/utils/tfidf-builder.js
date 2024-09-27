@@ -8,7 +8,10 @@ const { MongoClient } = require('mongodb');
         // connect to database
         await client.connect();
         const database = client.db(workerData.dbName);
-        const collection = database.collection(workerData.collectionName);
+        // const collection = database.collection(workerData.collectionName);
+
+        //TODO: Use the sleep collection for Demo !!!! remove it !!!!
+        const collection = database.collection("sleep");
 
         // query database
         // console.log(`Worker: skip ${workerData.skip}, limit ${workerData.limit}`);
