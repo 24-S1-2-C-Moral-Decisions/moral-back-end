@@ -11,26 +11,31 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class SearchService {
     private _tfidfData: {
-        tfidf?: natural.TfIdf;
+        tfidfMap?: Map<string, natural.TfIdf>;
         building: boolean;
         expireAt?: Date
     } = {
         building: false
     };
 
-    private get tfidf(): natural.TfIdf {
+    getTfidf(topic:string = 'all'): natural.TfIdf {
         if (this._tfidfData.building) {
             throw new TfIdfBuildingException();
         }
-        else if (!this._tfidfData.tfidf || this._tfidfData.expireAt < new Date()) {
+        else if (!this._tfidfData.tfidfMap || this._tfidfData.expireAt < new Date()) {
             this.setupTfidfCache();
             throw new TfIdfBuildingException();
         }
-        return this._tfidfData.tfidf;
+
+        return this._tfidfData.tfidfMap.get(topic) ?? new natural.TfIdf();
     }
 
-    private set tfidf(value: natural.TfIdf) {
-        this._tfidfData.tfidf = value;
+    private get tfidfMap(): Map<string, natural.TfIdf> {
+        return this._tfidfData.tfidfMap;
+    }
+
+    private set tfidfMap(value: Map<string, natural.TfIdf>) {
+        this._tfidfData.tfidfMap = value;
         this._tfidfData.expireAt = new Date(Date.now() + (parseInt(process.env.TFIDF_CACHE_TTL) * 1000));
     }
 
@@ -58,7 +63,7 @@ export class SearchService {
         Logger.log('Setting up tfidf cache', "SearchService");
         this.building = true;
 
-        this.tfidf = new natural.TfIdf();
+        const tfidfMap = new Map();
 
         const totalDocuments = await this.postMateDataRepository.count();
         const numWorkers = parseInt(process.env.TFIDF_WORKER_NUM ?? '1');
@@ -70,6 +75,12 @@ export class SearchService {
             const skip = i * batchSize;
             workerPromises.push(
                 new Promise((resolve, reject) => {
+                    const getOrCreateTopicTfidf = (topic: string): natural.TfIdf =>  {
+                        if (!tfidfMap.has(topic)) {
+                            tfidfMap.set(topic, new natural.TfIdf());
+                        }
+                        return tfidfMap.get(topic);
+                    };
                     const worker = TfIdfBuildHelper.getWorker(
                         {
                             skip,
@@ -87,7 +98,13 @@ export class SearchService {
                                 documentCount -= 1;
                                 continue;
                             }
-                            this._tfidfData.tfidf.addDocument(post.selftext, post._id);
+
+                            
+                            getOrCreateTopicTfidf(post.topic_1).addDocument(post.selftext, post._id);
+                            getOrCreateTopicTfidf(post.topic_2).addDocument(post.selftext, post._id);
+                            getOrCreateTopicTfidf(post.topic_3).addDocument(post.selftext, post._id);
+                            getOrCreateTopicTfidf(post.topic_4).addDocument(post.selftext, post._id);
+                            getOrCreateTopicTfidf('all').addDocument(post.selftext, post._id);
                         }
                         documentCount += message.documents.length;
                     });
@@ -109,19 +126,21 @@ export class SearchService {
         }
         
         Promise.all(workerPromises).then(() => {
+            this.tfidfMap = tfidfMap;
             this.building = false;
-            Logger.log(`Tfidf cache setup complete ${documentCount} doucuments with ${numWorkers} thread in ${performance.now() - startTime} ms`, "SearchService");
+            Logger.log(`Tfidf cache setup complete ${documentCount} doucuments and ${this.tfidfMap.size} topics with ${numWorkers}  thread in ${performance.now() - startTime} ms`, "SearchService");
         }).catch((err) => {
             Logger.error(`Workers encountered an error: ${err}`, "SearchService");
             this.building = false;
         });
     }
 
-    async search(topic:string, query: string, limit: number = 10): Promise<PostSummary[]> {
+    async search(topic:string = 'all', query: string, limit: number = 10): Promise<PostSummary[]> {
         const similerList = [];
-        this.tfidf.tfidfs(query, (i, measure) => {
+
+        this.getTfidf(topic).tfidfs(query, (i, measure) => {
             if (measure === 0) return;
-            similerList.push({ id: this.tfidf.documents[i], measure });
+            similerList.push({ id: this.getTfidf(topic).documents[i], measure });
         });
 
         // Sort by measure
