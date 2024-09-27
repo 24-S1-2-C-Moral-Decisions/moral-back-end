@@ -98,6 +98,10 @@ export class SearchService {
                     worker.on('message', (message) => {
                         Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
                         for (const post of message.documents) {
+                            if (post.selftext === undefined) {
+                                documentCount -= 1;
+                                continue;
+                            }
                             this._tfidfData.tfidf.addDocument(post.selftext, post._id);
                         }
                         documentCount += message.documents.length;
@@ -137,7 +141,6 @@ export class SearchService {
         // Sort by measure
         similerList.sort((a, b) => b.measure - a.measure);
         const postIds = similerList.map(result => {
-            console.log(result.id.__key, result.measure);
             return result.id.__key;
         });
 
