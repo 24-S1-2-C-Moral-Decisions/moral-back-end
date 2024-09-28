@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as natural from 'natural';
-import { CacheService } from '../cache/cache.service';
 import { PostSummary } from '../../entity/PostSummary';
 import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
@@ -128,6 +127,9 @@ export class SearchService {
         }).catch((err) => {
             Logger.error(`Workers encountered an error: ${err}`, "SearchService");
             this.building = false;
+        }).finally(() => {
+            if (global.gc)
+                global.gc();
         });
     }
 

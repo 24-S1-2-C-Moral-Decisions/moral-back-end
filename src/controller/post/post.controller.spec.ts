@@ -6,9 +6,7 @@ import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
 import { MoralCache } from '../../entity/Cache';
 import { CacheConnectionName, PostConnectionName } from '../../utils/ConstantValue';
 import { PostSummary } from '../../entity/PostSummary';
-import { Search } from '@nestjs/common';
 import { SearchService } from '../../service/search/search.service';
-import { PostMateData } from '../../entity/PostMateData';
 
 describe('PostController', () => {
   let controller: PostController;

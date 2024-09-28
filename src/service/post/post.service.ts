@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PostConnectionName, PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
+import { PostConnectionName } from '../../utils/ConstantValue';
 import { PostSummary } from '../../entity/PostSummary';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
 import { SearchService } from '../search/search.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PostService {

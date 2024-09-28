@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PostService } from '../../service/post/post.service';
-import { ApiProperty, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { CacheService } from '../../service/cache/cache.service';
 import { Type } from 'class-transformer';
 

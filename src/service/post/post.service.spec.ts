@@ -1,11 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostService } from './post.service';
-import { PostConnectionName, PostSummaryCollectionName } from '../../utils/ConstantValue';
-import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
+import { PostConnectionName } from '../../utils/ConstantValue';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { PostSummary } from '../../entity/PostSummary';
-import { Search } from '@nestjs/common';
 import { SearchService } from '../search/search.service';
-import { find } from 'rxjs';
 
 describe('PostService', () => {
   let service: PostService;

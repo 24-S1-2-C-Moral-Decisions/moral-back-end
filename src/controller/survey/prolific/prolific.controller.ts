@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ProlificService } from '../../../service/prolific/prolific.service';
 import { Prolific } from '../../../entity/Prolific';
 
