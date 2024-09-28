@@ -1,52 +1,60 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
-import { PostDocDto } from '../../module/posts/post.dto';
+import { PostConnectionName } from '../../utils/ConstantValue';
+import { PostSummary } from '../../entity/PostSummary';
+import { SearchService } from '../search/search.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PostService {
-    constructor(@InjectConnection('posts') private readonly posts:Connection ) {}
+    constructor(
+        @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
+        private searchService: SearchService,
+    ) {}
+
 
     async getTopicList() {
-        const collection = await this.posts.db.listCollections().toArray();
-
-        const topicList = Promise.all(
-            collection.map(async (collection) => {
-                const count = await this.posts.db.collection(collection.name).countDocuments();
+        return Promise.all(
+            Array.from(this.searchService.tfidfMap).map(async ([topic, tfidf]) => {
                 return {
-                    name: collection.name,
-                    count: count,
+                    topic,
+                    count: tfidf.documents.length
                 };
             })
-        )
-        return topicList;
+        ).then((data) => {
+            return data.sort((a, b) => b.count - a.count);
+        });
     }
 
-    async getPostsByTopic(topic: string, limit: number = 10 ): Promise<PostDocDto[]> {
-        const docsLis = await this.posts.db.collection(topic).find().limit(limit);
-        const docs = await docsLis.toArray();
-        const posts = Promise.all(
-            docs.map(async (doc) => {
-                return new PostDocDto({
-                    _id: doc._id.toString(),
-                    title: doc.title,
-                    verdict: doc.verdict,
-                    topic_1: doc.topic_1,
-                    topic_1_p: doc.topic_1_p,
-                    topic_2: doc.topic_2,
-                    topic_2_p: doc.topic_2_p,
-                    topic_3: doc.topic_3,
-                    topic_3_p: doc.topic_3_p,
-                    topic_4: doc.topic_4,
-                    topic_4_p: doc.topic_4_p,
-                    num_comments: doc.num_comments,
-                    resolved_verdict: doc.resolved_verdict,
-                    selftext: doc.selftext,
-                    YTA: doc.YTA,
-                    NTA: doc.NTA,
+    async getPostsOrderedByComments(pageSize: number = 10, page: number = 0): Promise<PostSummary[]> {
+        return this.postSummaryRepository.find({
+            order: {
+                commentCount: "DESC"
+            },
+            take: pageSize,
+            skip: page * pageSize
+        });
+    }
+
+    async getPostsByTopic(topic: string, pageSize: number = 10, page:number = 0): Promise<PostSummary[]> {
+        const ids: string[] = [];
+        for (const doc of this.searchService.getTfidf(topic).documents) {
+            if (ids.length > pageSize * page + pageSize) {
+                break;
+            }
+            ids.push(doc.__key as unknown as string);
+        }
+
+        const res = Promise.all(
+            ids.map(async (id) => {
+                return this.postSummaryRepository.findOne({
+                    where: {
+                        id: id
+                    }
                 });
             })
         );
-        return posts;
+        
+        return res;
     }
 }

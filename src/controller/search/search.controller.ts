@@ -1,9 +1,9 @@
 import { Controller, Get, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiOkResponse, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
 import { SearchOptionDto } from '../../module/search-option.dto';
-import { PostDocDto } from '../../module/posts/post.dto';
 import { SearchService, TfIdfBuildingException } from '../../service/search/search.service';
 import { PostService } from '../../service/post/post.service';
+import { PostSummary } from '../../entity/PostSummary';
 
 @Controller('search')
 @ApiTags('search')
@@ -14,17 +14,17 @@ export class SearchController {
         private postService: PostService
     ) {}
 
-    mockData:PostDocDto = {
+    mockData:PostSummary = {
         id: '1',
         title: 'title',
         verdict: 'INFO',
         topics: [
-            {topic: 'topic1', relevance: 0.5},
-            {topic: 'topic2', relevance: 0.3},
-            {topic: 'topic3', relevance: 0.2}
+            'topic1',
+            'topic2',
+            'topic3',
+            'topic4',
         ],
-        num_comments: 10,
-        resolved_verdict: 'INFO',
+        commentCount: 10,
         selftext: 'selftext',
         YTA: 1,
         NTA: 2,
@@ -33,23 +33,18 @@ export class SearchController {
     @Get()
     @ApiOkResponse({
         description: 'Return a list of search results',
-        type: [PostDocDto],
+        type: [PostSummary],
     })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     @ApiServiceUnavailableResponse({ description: 'Server is rebuilding searching cache, please waiting' })
-    async searchPost(@Query() searchOption: SearchOptionDto){
-        let res: PostDocDto[] = [];
+    async searchPost(@Query() searchOption: SearchOptionDto): Promise<PostSummary[]> {
+        let res: Promise<PostSummary[]>;
         try {
-            if (searchOption.keywords !== undefined){
-                res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
+            if (searchOption.keywords === undefined) {
+                res = this.postService.getPostsByTopic(searchOption.topic, searchOption.pageSize, searchOption.page);
             }
-            else if (searchOption.topic !== undefined){
-                if (searchOption.keywords === undefined){
-                    res = await this.postService.getPostsByTopic(searchOption.topic, searchOption.limit);
-                }
-                else {
-                    res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
-                }
+            else {
+                res = this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.pageSize, searchOption.page);
             }
         }
         catch (e) {

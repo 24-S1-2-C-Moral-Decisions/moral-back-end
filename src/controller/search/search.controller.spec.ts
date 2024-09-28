@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SearchController } from './search.controller';
 import { PostService } from '../../service/post/post.service';
-import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { SearchService } from '../../service/search/search.service';
-import { PostDoc } from '../../schemas/post.shcemas';
 import { CacheService } from '../../service/cache/cache.service';
-import { MoralCache } from '../../schemas/cache.shcemas';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
+import { MoralCache } from '../../entity/Cache';
+import { CacheConnectionName, PostConnectionName } from '../../utils/ConstantValue';
+import { PostSummary } from '../../entity/PostSummary';
 
 describe('SearchController', () => {
   let controller: SearchController;
@@ -14,28 +15,31 @@ describe('SearchController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SearchController],
       providers: [
-        {
-          provide: SearchService,
-          useValue: {},
-        },
         PostService,
         CacheService,
         {
-          provide: getModelToken(MoralCache.name, 'cache'),
+          provide: getDataSourceToken(PostConnectionName),
           useValue: {},
         },
         {
-          provide: getModelToken(PostDoc.name, 'posts'),
+          provide: getRepositoryToken(PostSummary, PostConnectionName),
           useValue: {},
         },
         {
-          provide: getConnectionToken('posts'),
+          provide: SearchService,
           useValue: {
-            collection: jest.fn().mockRejectedValue({
-              countDocuments: jest.fn().mockResolvedValue(1),
-            }),
+            setupTfidfCache: jest.fn(),
           },
         },
+        {
+          provide: getRepositoryToken(MoralCache, CacheConnectionName),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            deleteOne: jest.fn(),
+          },
+        }
       ],
     }).compile();
 

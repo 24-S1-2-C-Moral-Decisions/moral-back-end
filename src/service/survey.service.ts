@@ -1,29 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Question } from '../schemas/question.schemas';
-import { Answers } from '../schemas/answers.shcemas';
+import { Question } from '../entity/Question';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
+import { Answer } from '../entity/Answer';
+import { ObjectId } from 'mongodb';
+import { SurveyConnectionName } from '../utils/ConstantValue';
 import { StudyIdDto } from '../module/survey/studyId.dto';
-import { AnswerIdDto, AnswersDto } from '../module/survey/answers.dto';
 
 @Injectable()
 export class SurveyService {
     constructor(
-        @InjectModel(Question.name, 'survey') private questionModel: Model<Question>,
-        @InjectModel(Answers.name, 'survey') private answersModel: Model<Answers>
+        @InjectRepository(Answer, SurveyConnectionName) private answerRepository: MongoRepository<Answer>,
+        @InjectRepository(Question, SurveyConnectionName) private questionRepository: MongoRepository<Question>,
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
-        const question = await this.questionModel.findOne().sort({ [`count.${studyId.studyId}`]:1 }).exec();
-                if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
+        const questions = await this.questionRepository.aggregate([
+            { $sort: { [`count.${studyId.studyId}`]: 1 } },
+            { $limit: 1 }
+        ]).toArray();
+
+        const question = questions.length > 0 ? questions[0] : null;
+        if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
             throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
         }
         question.count[studyId.studyId] = (question.count[studyId.studyId] || 0) + 1;
-        await question.save();
+        this.questionRepository.updateOne({ _id: question._id }, { $set: { count: question.count } });
         return question;
     }
 
-    async createAnswers(answers: AnswersDto): Promise<string>{  
+    async createAnswers(answers: Answer): Promise<string>{  
         if (answers.decisionMaking === undefined) {
             throw new Error('Decision making results are required');
         }
@@ -47,13 +53,22 @@ export class SurveyService {
                 throw new Error('The value of Personality choice question must between [1,5]');
             }
         });
-        
-        const res = await this.answersModel.create(answers);
-        return res._id.toString(); 
+
+        if (! (answers.answerDetail instanceof Array)) {
+            answers.answerDetail = [answers.answerDetail];
+        }
+
+        const entity = this.answerRepository.create(answers);
+        return this.answerRepository.save(entity).then((res) => {
+            return res._id;
+        });
     }
 
-    async findAnswersById(id: AnswerIdDto): Promise<Answers> {
-        return this.answersModel.findById(id).exec();
+    async findAnswersById(id: string): Promise<Answer> {
+        return this.answerRepository.findOne({
+            where: { _id: new ObjectId(id) },
+            relations: ['prolific'],
+        });
     }
 
     // async initCount() {

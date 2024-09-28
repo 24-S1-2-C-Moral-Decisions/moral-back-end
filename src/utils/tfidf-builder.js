@@ -8,10 +8,7 @@ const { MongoClient } = require('mongodb');
         // connect to database
         await client.connect();
         const database = client.db(workerData.dbName);
-        // const collection = database.collection(workerData.collectionName);
-
-        //TODO: Use the sleep collection for Demo !!!! remove it !!!!
-        const collection = database.collection("sleep");
+        const collection = database.collection(workerData.collectionName);
 
         // query database
         // console.log(`Worker: skip ${workerData.skip}, limit ${workerData.limit}`);
@@ -21,7 +18,7 @@ const { MongoClient } = require('mongodb');
         for await (const post of collection.find().skip(workerData.skip).limit(workerData.limit)) {
             documentList.push(post);
             documentCount++;
-            if (documentCount % 1000 == 0) {
+            if (documentCount % process.env.TFIDF_WORKER_BATCH_SIZE == 0) {
                 parentPort?.postMessage({
                     documents: documentList,
                 });

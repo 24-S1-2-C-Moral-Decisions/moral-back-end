@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as natural from 'natural';
-import { CacheService } from '../cache/cache.service';
-import { Connection, Model } from 'mongoose';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { PostDocDto } from '../../module/posts/post.dto';
-import { PostDoc } from '../../schemas/post.shcemas';
+import { PostSummary } from '../../entity/PostSummary';
+import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
+import { AllCollectionName, PostConnectionName, PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SearchService {
@@ -17,7 +17,7 @@ export class SearchService {
         building: false
     };
 
-    getTfidf(topic:string = 'all'): natural.TfIdf {
+    getTfidf(topic:string = AllCollectionName): natural.TfIdf {
         if (this._tfidfData.building) {
             throw new TfIdfBuildingException();
         }
@@ -29,7 +29,7 @@ export class SearchService {
         return this._tfidfData.tfidfMap.get(topic) ?? new natural.TfIdf();
     }
 
-    private get tfidfMap(): Map<string, natural.TfIdf> {
+    get tfidfMap(): Map<string, natural.TfIdf> {
         return this._tfidfData.tfidfMap;
     }
 
@@ -47,14 +47,13 @@ export class SearchService {
     }
 
     constructor(
-        @InjectModel(PostDoc.name, 'posts') private postModel: Model<PostDoc>,
-        @InjectConnection('posts') private readonly poetConnection: Connection,
-        private readonly cacheService: CacheService
+        @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
+        @InjectRepository(PostMateData, PostConnectionName) private postMateDataRepository: Repository<PostMateData>
     ) {
         this.setupTfidfCache();
     }
 
-    async setupTfidfCache() {
+    private async setupTfidfCache() {
         let documentCount = 0;
         const startTime = performance.now();
 
@@ -63,7 +62,7 @@ export class SearchService {
 
         const tfidfMap = new Map();
 
-        const totalDocuments = await this.poetConnection.collection('all').countDocuments();
+        const totalDocuments = await this.postMateDataRepository.count();
         const numWorkers = parseInt(process.env.TFIDF_WORKER_NUM ?? '1');
         const batchSize:number = Math.ceil(totalDocuments / numWorkers);
         
@@ -82,10 +81,10 @@ export class SearchService {
                     const worker = TfIdfBuildHelper.getWorker(
                         {
                             skip,
-                            limit: batchSize,
+                            limit: batchSize + skip > totalDocuments ? totalDocuments - skip : batchSize,
                             postConnectionUri: process.env.DATABASE_URL,
-                            dbName: 'posts',
-                            collectionName: 'all'
+                            dbName: PostsDBName,
+                            collectionName: PostSummaryCollectionName
                         }
                     );
     
@@ -97,12 +96,10 @@ export class SearchService {
                                 continue;
                             }
 
-                            
-                            getOrCreateTopicTfidf(post.topic_1).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_2).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_3).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_4).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf('all').addDocument(post.selftext, post._id);
+                            for (const topic of post.topics) {
+                                getOrCreateTopicTfidf(topic).addDocument(post.selftext, post.id);
+                            }
+                            getOrCreateTopicTfidf('all').addDocument(post.selftext, post.id);
                         }
                         documentCount += message.documents.length;
                     });
@@ -130,12 +127,16 @@ export class SearchService {
         }).catch((err) => {
             Logger.error(`Workers encountered an error: ${err}`, "SearchService");
             this.building = false;
+        }).finally(() => {
+            if (global.gc)
+                global.gc();
         });
     }
 
-    async search(topic:string = 'all', query: string, limit: number = 10): Promise<PostDocDto[]> {
+    async search(topic:string = 'all', query: string, pageSize: number = 10, page:number = 0): Promise<PostSummary[]> {
+        
+        let postIds = [];
         const similerList = [];
-
         this.getTfidf(topic).tfidfs(query, (i, measure) => {
             if (measure === 0) return;
             similerList.push({ id: this.getTfidf(topic).documents[i], measure });
@@ -143,24 +144,25 @@ export class SearchService {
 
         // Sort by measure
         similerList.sort((a, b) => b.measure - a.measure);
-        const postIds = similerList.map(result => {
+        postIds = similerList.map(result => {
             return result.id.__key;
         });
+    
+        const res: Promise<PostSummary>[] = [];
+        let postCount = 0;
 
-        const res: PostDocDto[] = [];
         for (const postId of postIds) {
-            const data = await this.postModel.findById(postId);
-            if (!data)
-                continue;
-            const post = new PostDocDto(data);
-            if (topic === undefined || post.isRelevantTopic(topic)) {
+            if (postCount >= pageSize * page) {
+                const post = this.postSummaryRepository.findOne({ where: { id: postId } });
                 res.push(post);
-                if (res.length >= limit) {
+                if (res.length >= pageSize) {
                     break;
                 }
             }
+            postCount += 1;
         }
-        return res;
+        
+        return Promise.all(res);
     }
 }
 

@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostController } from './post.controller';
-import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { PostService } from '../../service/post/post.service';
 import { CacheService } from '../../service/cache/cache.service';
-import { MoralCache } from '../../schemas/cache.shcemas';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
+import { MoralCache } from '../../entity/Cache';
+import { CacheConnectionName, PostConnectionName } from '../../utils/ConstantValue';
+import { PostSummary } from '../../entity/PostSummary';
+import { SearchService } from '../../service/search/search.service';
 
 describe('PostController', () => {
   let controller: PostController;
@@ -17,12 +20,32 @@ describe('PostController', () => {
         PostService,
         CacheService,
         {
-          provide: getConnectionToken('posts'),
+          provide: SearchService,
+          useValue: {
+            setupTfidfCache: jest.fn(),
+          },
+        },
+        {
+          provide: getDataSourceToken(PostConnectionName),
           useValue: {},
         },
         {
-          provide: getModelToken(MoralCache.name, 'cache'),
-          useValue: {},
+          provide: getRepositoryToken(PostSummary, PostConnectionName),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            deleteOne: jest.fn(),
+          },
+        },
+        {
+          provide: getRepositoryToken(MoralCache, CacheConnectionName),
+          useValue: {
+            findOne: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+            deleteOne: jest.fn(),
+          },
         },
       ]
     }).compile();
