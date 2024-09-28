@@ -26,6 +26,7 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
         PORT: Joi.number().default(3000),
         DATABASE_URL: Joi.string().required(),
         TFIDF_WORKER_NUM: Joi.number().required(),
+        TFIDF_WORKER_BATCH_SIZE: Joi.number().required(),
         DEFAULT_CACHE_TTL: Joi.number().required(),
       }),
     }),

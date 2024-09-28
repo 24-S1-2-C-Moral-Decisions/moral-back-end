@@ -18,7 +18,7 @@ const { MongoClient } = require('mongodb');
         for await (const post of collection.find().skip(workerData.skip).limit(workerData.limit)) {
             documentList.push(post);
             documentCount++;
-            if (documentCount % 1000 == 0) {
+            if (documentCount % process.env.TFIDF_WORKER_BATCH_SIZE == 0) {
                 parentPort?.postMessage({
                     documents: documentList,
                 });
