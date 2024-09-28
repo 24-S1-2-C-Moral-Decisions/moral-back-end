@@ -24,6 +24,7 @@ export class SearchController {
             'topic3',
             'topic4',
         ],
+        commentCount: 10,
         selftext: 'selftext',
         YTA: 1,
         NTA: 2,

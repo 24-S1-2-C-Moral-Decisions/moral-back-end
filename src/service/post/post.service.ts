@@ -10,8 +10,9 @@ import { SearchService } from '../search/search.service';
 export class PostService {
     constructor(
         @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
-        private searchService: SearchService
+        private searchService: SearchService,
     ) {}
+
 
     async getTopicList() {
         return Promise.all(
@@ -23,6 +24,16 @@ export class PostService {
             })
         ).then((data) => {
             return data.sort((a, b) => b.count - a.count);
+        });
+    }
+
+    async getPostsOrderedByComments(pageSize: number = 10, page: number = 0): Promise<PostSummary[]> {
+        return this.postSummaryRepository.find({
+            order: {
+                commentCount: "DESC"
+            },
+            take: pageSize,
+            skip: page * pageSize
         });
     }
 

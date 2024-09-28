@@ -28,6 +28,7 @@ const { MongoClient } = require('mongodb');
                     YTA: post.YTA,
                     NTA: post.NTA,
                     selftext: submission.selftext,
+                    commentCount: submission.num_comments,
                     topics: []
                 }
     

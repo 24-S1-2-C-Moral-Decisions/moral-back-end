@@ -23,6 +23,9 @@ export class PostSummary {
     @Column()
     selftext: string;
 
+    @Column()
+    commentCount: number;
+
     @Column("string", { array: true })
     topics: string[];
 }

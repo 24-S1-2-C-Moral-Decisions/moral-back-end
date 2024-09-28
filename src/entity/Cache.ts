@@ -14,6 +14,9 @@ export class MoralCache {
 
     @Column()
     expiresAt: Date;
+
+    @Column()
+    hit: number;
 }
 
 export const expectCache = [

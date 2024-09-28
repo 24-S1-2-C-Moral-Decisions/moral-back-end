@@ -16,6 +16,7 @@ export class CacheService {
         });
 
         if (cacheData && cacheData.expiresAt > new Date()) {
+            this.cacheRepository.update({ key }, { hit: cacheData.hit + 1 });
             return JSON.parse(cacheData.value);
         }
         if (cacheData) {
@@ -28,11 +29,15 @@ export class CacheService {
         // 1 month
         // const ttl = 5; // 5 seconds
         const expiresAt = new Date(Date.now() + ttl * 1000);
-        const entity = this.cacheRepository.create({ key, value: JSON.stringify(value), expiresAt });
+        const entity = this.cacheRepository.create({ key, value: JSON.stringify(value), expiresAt , hit: 0 });
         this.cacheRepository.save(entity);
     }
 
     deleteCache(key: string) {
         this.cacheRepository.delete({ key });
+    }
+
+    clearCache() {
+        this.cacheRepository.clear();
     }
 }
