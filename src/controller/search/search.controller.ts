@@ -36,19 +36,14 @@ export class SearchController {
     })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     @ApiServiceUnavailableResponse({ description: 'Server is rebuilding searching cache, please waiting' })
-    async searchPost(@Query() searchOption: SearchOptionDto){
-        let res: PostSummary[] = [];
+    async searchPost(@Query() searchOption: SearchOptionDto): Promise<PostSummary[]> {
+        let res: Promise<PostSummary[]>;
         try {
-            if (searchOption.keywords !== undefined){
-                res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
+            if (searchOption.keywords === undefined) {
+                res = this.postService.getPostsByTopic(searchOption.topic, searchOption.pageSize, searchOption.page);
             }
-            else if (searchOption.topic !== undefined){
-                if (searchOption.keywords === undefined){
-                    res = await this.postService.getPostsByTopic(searchOption.topic, searchOption.limit);
-                }
-                else {
-                    res = await this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.limit);
-                }
+            else {
+                res = this.searchService.search(searchOption.topic, searchOption.keywords, searchOption.pageSize, searchOption.page);
             }
         }
         catch (e) {

@@ -104,13 +104,13 @@ describe('SurveyController', () => {
 
   describe('getAnswersById', () => {
     it('should return answers', async () => {
-      const actuall = await controller.getAnswersById(mockAnswer._id.toString());
+      const actuall = await controller.getAnswersById({ answerId: mockAnswer._id });
       expect(actuall).toEqual(mockAnswer);
     });
 
     // invalid answerId
     it ('should throw', async () => {
-      expect(controller.getAnswersById('xxx')).rejects.toThrow();
+      expect(controller.getAnswersById({answerId:"xxx"})).rejects.toThrow();
     });
   });
 });

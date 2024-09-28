@@ -18,6 +18,21 @@ async function bootstrap() {
     }
   }));
 
+  process.on('warning', (warning) => {
+    console.warn('Warning received:', warning);
+    if (warning.name === 'MemoryWarning') {
+      const memoryUsage = process.memoryUsage();
+      console.log('Memory usage:', memoryUsage);
+      console.log('Memory usage is high, gc...');
+      if (global.gc) {
+        global.gc();
+        console.log('Manually triggered garbage collection');
+      } else {
+        console.warn('Garbage collection is not exposed');
+      }
+    }
+  });
+
   if (process.env.NODE_ENV === 'development') {
       const config = new DocumentBuilder()
       .setTitle('Moral Decisions API')

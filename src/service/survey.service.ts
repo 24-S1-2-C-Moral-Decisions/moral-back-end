@@ -59,11 +59,13 @@ export class SurveyService {
         }
 
         const entity = this.answerRepository.create(answers);
-        return (await this.answerRepository.save(entity))._id.toString();
+        return this.answerRepository.save(entity).then((res) => {
+            return res._id;
+        });
     }
 
     async findAnswersById(id: string): Promise<Answer> {
-        return await this.answerRepository.findOne({
+        return this.answerRepository.findOne({
             where: { _id: new ObjectId(id) },
             relations: ['prolific'],
         });

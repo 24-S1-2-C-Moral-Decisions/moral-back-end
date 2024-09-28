@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class SearchOptionDto {
     @ApiProperty({
@@ -26,5 +27,17 @@ export class SearchOptionDto {
         example: 10
     })
     @IsOptional()
-    limit?: number;
+    @IsNumber()
+    @Type(() => Number)
+    pageSize?: number = 10;
+
+    @ApiProperty({
+        description: 'The page of the search',
+        required: false,
+        example: 0
+    })
+    @IsOptional()
+    @IsNumber()
+    @Type(() => Number)
+    page?: number = 0;
 }

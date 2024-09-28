@@ -8,10 +8,10 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev": "NODE_ENV=development nest start --watch",
-    "start:debug": "NODE_ENV=development nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' nest start",
+    "start:dev": "NODE_OPTIONS='--max-old-space-size=4096' NODE_ENV=development nest start --watch",
+    "start:debug": "NODE_OPTIONS='--max-old-space-size=4096' NODE_ENV=development nest start --debug --watch",
+    "start:prod": "node --max-old-space-size=4096 dist/src/main",
 
     "typeorm": "typeorm-ts-node-esm",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js -d ./migration-data-source.ts migration:run",

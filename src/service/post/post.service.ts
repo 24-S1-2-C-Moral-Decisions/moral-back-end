@@ -1,54 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { PostConnectionName, PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
 import { PostSummary } from '../../entity/PostSummary';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { MongoQueryRunner } from 'typeorm/driver/mongodb/MongoQueryRunner';
+import { SearchService } from '../search/search.service';
 
 @Injectable()
 export class PostService {
-    constructor(@InjectDataSource(PostConnectionName) private postsDataSource: DataSource) {}
+    constructor(
+        @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
+        private searchService: SearchService
+    ) {}
 
     async getTopicList() {
-        const queryRunner = this.postsDataSource.createQueryRunner() as MongoQueryRunner;
-        const db = queryRunner.databaseConnection.db(PostsDBName);
-        const collection = await db.listCollections().toArray();
-
-        const topicList = [] 
-        await Promise.all(
-            collection.map(async (collection) => {
-                if (collection.name == PostSummaryCollectionName){
-                    return;
-                }
-                const count = await db.collection(collection.name).countDocuments();
-                topicList.push({
-                    name: collection.name,
-                    count: count,
-                });
-            })
-        )
-        return topicList;
-    }
-
-    async getPostsByTopic(topic: string, limit: number = 10 ): Promise<PostSummary[]> {
-        const queryRunner = this.postsDataSource.createQueryRunner() as MongoQueryRunner;
-        const db = queryRunner.databaseConnection.db(PostsDBName);
-        const docsLis = await db.collection(topic).find().limit(limit).toArray();
-        const posts = Promise.all(
-            docsLis.map(async (doc) => {
+        return Promise.all(
+            Array.from(this.searchService.tfidfMap).map(async ([topic, tfidf]) => {
                 return {
-                    id: doc.id,
-                    title: doc.title,
-                    verdict: doc.verdict,
-                    topics: doc.topics,
-                    num_comments: doc.num_comments,
-                    resolved_verdict: doc.resolved_verdict,
-                    selftext: doc.selftext,
-                    YTA: doc.YTA,
-                    NTA: doc.NTA,
+                    topic,
+                    count: tfidf.documents.length
                 };
             })
+        ).then((data) => {
+            return data.sort((a, b) => b.count - a.count);
+        });
+    }
+
+    async getPostsByTopic(topic: string, pageSize: number = 10, page:number = 0): Promise<PostSummary[]> {
+        const ids: string[] = [];
+        for (const doc of this.searchService.getTfidf(topic).documents) {
+            if (ids.length > pageSize * page) {
+                break;
+            }
+            ids.push(doc.__key as unknown as string);
+        }
+
+        const res = Promise.all(
+            ids.map(async (id) => {
+                return this.postSummaryRepository.findOne({
+                    where: {
+                        id: id
+                    }
+                });
+            })
         );
-        return posts;
+        
+        return res;
     }
 }

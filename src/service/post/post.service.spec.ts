@@ -1,7 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostService } from './post.service';
 import { PostConnectionName, PostSummaryCollectionName } from '../../utils/ConstantValue';
-import { getDataSourceToken } from '@nestjs/typeorm';
+import { getDataSourceToken, getRepositoryToken } from '@nestjs/typeorm';
+import { PostSummary } from '../../entity/PostSummary';
+import { Search } from '@nestjs/common';
+import { SearchService } from '../search/search.service';
+import { find } from 'rxjs';
 
 describe('PostService', () => {
   let service: PostService;
@@ -11,44 +15,28 @@ describe('PostService', () => {
       providers: [
         PostService,
         {
-          provide: getDataSourceToken(PostConnectionName),
+          provide: SearchService,
           useValue: {
-            createQueryRunner: jest.fn().mockReturnValue({
-              databaseConnection: {
-                db: jest.fn().mockReturnValue({
-                  listCollections: jest.fn().mockReturnValue({
-                    toArray: jest.fn().mockResolvedValue([
-                      { name: 'topic1' },
-                      { name: 'topic2' },
-                    ]),
-                  }),
-                  collection: jest.fn().mockImplementation((name) => {
-                    return {
-                      countDocuments: jest.fn().mockImplementation(() => {
-                        if (name === PostSummaryCollectionName) throw new Error('Error');
-                        return 1;
-                      }),
-                      find: jest.fn().mockReturnValue({
-                        limit: jest.fn().mockReturnValue({
-                          toArray: jest.fn().mockResolvedValue([
-                            {
-                              id: 'id',
-                              title: 'title',
-                              verdict: 'verdict',
-                              topics: ['topics'],
-                              num_comments: 'num_comments',
-                              resolved_verdict: 'resolved_verdict',
-                              selftext: 'selftext',
-                              YTA: 0,
-                              NTA: 0,
-                            }
-                          ]),
-                        }),
-                      }),
-                    }
-                  }),
-                }),
-              },
+            tfidfMap: new Map([
+              ['topic1', { documents: ['id'] }],
+              ['topic2', { documents: ['id'] }],
+            ]),
+            getTfidf: jest.fn().mockReturnValue({ documents: [{__key:"id"}] }),
+          },
+        },
+        {
+          provide: getRepositoryToken(PostSummary, PostConnectionName),
+          useValue: {
+            findOne: jest.fn().mockResolvedValue({
+              id: 'id',
+              title: 'title',
+              verdict: 'verdict',
+              topics: ['topics'],
+              num_comments: 10,
+              resolved_verdict: 'resolved_verdict',
+              selftext: 'selftext',
+              YTA: 0,
+              NTA: 0,
             }),
           },
         },
@@ -66,9 +54,9 @@ describe('PostService', () => {
     const topicList = await service.getTopicList();
     expect(topicList).toBeDefined();
     expect(topicList).toHaveLength(2);
-    expect(topicList[0].name).toBe('topic1');
+    expect(topicList[0].topic).toBe('topic1');
     expect(topicList[0].count).toBe(1);
-    expect(topicList[1].name).toBe('topic2');
+    expect(topicList[1].topic).toBe('topic2');
     expect(topicList[1].count).toBe(1);
   });
 
@@ -81,7 +69,7 @@ describe('PostService', () => {
       title: 'title',
       verdict: 'verdict',
       topics: ['topics'],
-      num_comments: 'num_comments',
+      num_comments: 10,
       resolved_verdict: 'resolved_verdict',
       selftext: 'selftext',
       YTA: 0,

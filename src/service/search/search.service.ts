@@ -4,7 +4,7 @@ import { CacheService } from '../cache/cache.service';
 import { PostSummary } from '../../entity/PostSummary';
 import { PostMateData } from '../../entity/PostMateData';
 import { TfIdfBuildHelper } from '../../utils/tfidf-builder-helper';
-import { PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
+import { AllCollectionName, PostConnectionName, PostsDBName, PostSummaryCollectionName } from '../../utils/ConstantValue';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -18,7 +18,7 @@ export class SearchService {
         building: false
     };
 
-    getTfidf(topic:string = 'all'): natural.TfIdf {
+    getTfidf(topic:string = AllCollectionName): natural.TfIdf {
         if (this._tfidfData.building) {
             throw new TfIdfBuildingException();
         }
@@ -30,7 +30,7 @@ export class SearchService {
         return this._tfidfData.tfidfMap.get(topic) ?? new natural.TfIdf();
     }
 
-    private get tfidfMap(): Map<string, natural.TfIdf> {
+    get tfidfMap(): Map<string, natural.TfIdf> {
         return this._tfidfData.tfidfMap;
     }
 
@@ -48,15 +48,13 @@ export class SearchService {
     }
 
     constructor(
-        @InjectRepository(PostSummary, "posts") private postSummaryRepository: Repository<PostSummary>,
-        @InjectRepository(PostMateData, "posts") private postMateDataRepository: Repository<PostMateData>,
-        private readonly cacheService: CacheService
+        @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
+        @InjectRepository(PostMateData, PostConnectionName) private postMateDataRepository: Repository<PostMateData>
     ) {
         this.setupTfidfCache();
     }
 
     private async setupTfidfCache() {
-        console.log('Setting up tfidf cache');
         let documentCount = 0;
         const startTime = performance.now();
 
@@ -99,12 +97,10 @@ export class SearchService {
                                 continue;
                             }
 
-                            
-                            getOrCreateTopicTfidf(post.topic_1).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_2).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_3).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf(post.topic_4).addDocument(post.selftext, post._id);
-                            getOrCreateTopicTfidf('all').addDocument(post.selftext, post._id);
+                            for (const topic of post.topics) {
+                                getOrCreateTopicTfidf(topic).addDocument(post.selftext, post.id);
+                            }
+                            getOrCreateTopicTfidf('all').addDocument(post.selftext, post.id);
                         }
                         documentCount += message.documents.length;
                     });
@@ -135,9 +131,10 @@ export class SearchService {
         });
     }
 
-    async search(topic:string = 'all', query: string, limit: number = 10): Promise<PostSummary[]> {
+    async search(topic:string = 'all', query: string, pageSize: number = 10, page:number = 0): Promise<PostSummary[]> {
+        
+        let postIds = [];
         const similerList = [];
-
         this.getTfidf(topic).tfidfs(query, (i, measure) => {
             if (measure === 0) return;
             similerList.push({ id: this.getTfidf(topic).documents[i], measure });
@@ -145,23 +142,25 @@ export class SearchService {
 
         // Sort by measure
         similerList.sort((a, b) => b.measure - a.measure);
-        const postIds = similerList.map(result => {
+        postIds = similerList.map(result => {
             return result.id.__key;
         });
+    
+        const res: Promise<PostSummary>[] = [];
+        let postCount = 0;
 
-        const res: PostSummary[] = [];
         for (const postId of postIds) {
-            const post = await this.postSummaryRepository.findOne(postId);
-            if (!post)
-                continue;
-            if (topic === undefined || topic == 'all' || post.topics.includes(topic)) {
+            if (postCount >= pageSize * page) {
+                const post = this.postSummaryRepository.findOne({ where: { id: postId } });
                 res.push(post);
-                if (res.length >= limit) {
+                if (res.length >= pageSize) {
                     break;
                 }
             }
+            postCount += 1;
         }
-        return res;
+        
+        return Promise.all(res);
     }
 }
 

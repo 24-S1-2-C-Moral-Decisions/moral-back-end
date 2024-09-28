@@ -11,17 +11,17 @@ export class ProlificService {
     ) { }
 
     async createOrUpdate(prolificId: string, prolificData: Partial<Prolific>): Promise<Prolific> {
-        let entity = await this.findProlificById(prolificId);
-
-        if (!entity) {
-            entity = this.createProlific(prolificData);
-            return this.prolificRepository.save(entity);
-        }
-        else {
-            entity = this.prolificRepository.merge(entity, prolificData);
-            this.prolificRepository.update(entity._id, entity);
-            return entity;
-        }
+        return this.findProlificById(prolificId).then((res) => {
+            if (!res) {
+                res = this.createProlific(prolificData);
+                return this.prolificRepository.save(res);
+            }
+            else {
+                res = this.prolificRepository.merge(res, prolificData);
+                this.prolificRepository.update(res._id, res);
+                return res;
+            }
+        });
     }
 
     async findProlificById(id: string): Promise<Prolific> {

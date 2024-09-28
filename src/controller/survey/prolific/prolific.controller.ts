@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Query } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ProlificService } from '../../../service/prolific/prolific.service';
 import { Prolific } from '../../../entity/Prolific';
 
@@ -20,7 +20,7 @@ export class ProlificController {
             }
         }
         // console.log(body);
-        return await this.prolificService.createOrUpdate(body.prolificId, body).then((res) => {
+        return this.prolificService.createOrUpdate(body.prolificId, body).then((res) => {
             return res;
         }).catch((err) => {
             Logger.debug(err);
@@ -29,9 +29,15 @@ export class ProlificController {
     }
 
     @Get()
+    @ApiQuery({
+        name: 'prolificId',
+        required: true,
+        description: 'The ID of the prolific you want to retrieve',
+        example: 'prolific-Xinlong'
+    })
     @ApiCreatedResponse({ description: 'Return coresponing prolific'})
-    async findProlificById(@Query() prolific : Prolific) {
-        return await this.prolificService.findProlificById(prolific.prolificId).then((res) => {
+    async findProlificById(@Query() body : {prolificId: string}) {
+        return this.prolificService.findProlificById(body.prolificId).then((res) => {
             return res;
         });
     }

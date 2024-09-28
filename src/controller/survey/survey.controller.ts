@@ -27,7 +27,7 @@ export class SurveyController {
 
         // console.log('Validated studyId:', studyId);
 
-        return await this.surveyService.findQuestion(studyId).then((question) => {
+        return this.surveyService.findQuestion(studyId).then((question) => {
             return question;
         }).catch((err) => {
             Logger.debug(err);
@@ -39,7 +39,7 @@ export class SurveyController {
     @ApiCreatedResponse({ description: 'Return the answer id has been created' })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
     async postAnswers(@Body() body : Answer) {
-        return await this.surveyService.createAnswers(body).then((id) => {
+        return this.surveyService.createAnswers(body).then((id) => {
             return id;
         }).catch((err) => {
             Logger.debug(err);
@@ -56,8 +56,8 @@ export class SurveyController {
     })
     @ApiCreatedResponse({ description: 'Find the answer by id' })
     @ApiBadRequestResponse({ description: 'Invalid Parameters, Failed to get the question, message is stored in message field' })
-    async getAnswersById(@Query() answerId: string) {
-        return await this.surveyService.findAnswersById(answerId).then((answers) => {
+    async getAnswersById(@Query() body: {answerId: string}) {
+        return this.surveyService.findAnswersById(body.answerId).then((answers) => {
             return answers;
         }).catch((err) => {
             Logger.debug(err);

@@ -19,8 +19,10 @@ export class PostController {
             return cachedData;
         }
 
-        const newData = await this.postService.getTopicList();
-        this.cacheService.setCache(cacheKey, newData);
+        const newData = this.postService.getTopicList();
+        newData.then((data) => {
+            this.cacheService.setCache(cacheKey, data);
+        });
         return newData;
     }
 
