@@ -11,6 +11,7 @@ const MoralCacheMockRepository = {
   create: jest.fn().mockImplementation((cache) => {
     return cache;
   }),
+  update: jest.fn(),
   save: jest.fn(),
   delete: jest.fn(),
 }
@@ -33,6 +34,8 @@ describe('CacheService', () => {
 
   it('cache should be get', async () => {
     const cache = await service.getCache("validCache");
+    expect(MoralCacheMockRepository.findOne).toHaveBeenCalled();
+    expect(MoralCacheMockRepository.update).toHaveBeenCalled();
     expect(MoralCacheMockRepository.delete).not.toHaveBeenCalled();
     expect(cache).toEqual(JSON.parse(expectCache[1].value));
   });

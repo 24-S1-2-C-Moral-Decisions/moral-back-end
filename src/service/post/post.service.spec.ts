@@ -67,7 +67,7 @@ describe('PostService', () => {
       title: 'title',
       verdict: 'verdict',
       topics: ['topics'],
-      comments: 10,
+      commentCount: 10,
       resolved_verdict: 'resolved_verdict',
       selftext: 'selftext',
       YTA: 0,
