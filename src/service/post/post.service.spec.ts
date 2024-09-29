@@ -16,8 +16,8 @@ describe('PostService', () => {
           provide: SearchService,
           useValue: {
             tfidfMap: new Map([
-              ['topic1', { documents: ['id'] }],
-              ['topic2', { documents: ['id'] }],
+              ['topic1', { documents: [{__key: "xx"}] }],
+              ['topic2', { documents: [{__key: "xx"}] }],
             ]),
             getTfidf: jest.fn().mockReturnValue({ documents: [{__key:"id"}] }),
           },

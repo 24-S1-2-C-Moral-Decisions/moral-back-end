@@ -38,11 +38,9 @@ export class PostService {
 
     async getPostsByTopic(topic: string, pageSize: number = 10, page:number = 0): Promise<PostSummary[]> {
         const ids: string[] = [];
-        for (const doc of this.searchService.getTfidf(topic).documents) {
-            if (ids.length > pageSize * page + pageSize) {
-                break;
-            }
-            ids.push(doc.__key as unknown as string);
+        const documents = this.searchService.getTfidf(topic).documents;
+        for (let index = pageSize * page; index < pageSize * page + pageSize && index < documents.length; index++) {
+            ids.push(documents[index].__key as unknown as string);
         }
 
         const res = Promise.all(
