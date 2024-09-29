@@ -52,14 +52,14 @@ export class PostController {
     @Get('hotPosts')
     @ApiTags('post')
     async getOrderedPosts(@Query() body: Pageing = { pageSize: 10, page: 0 }) {
-        const cachedData = await this.cacheService.getCache(HotPostsCacheKey);
+        const cachedData = await this.cacheService.getCache(HotPostsCacheKey+"_"+body.pageSize+"_"+body.page);
 
         if (cachedData) {
             return cachedData;
         }
 
         return this.postService.getPostsOrderedByComments(body.pageSize, body.page).then((data) => {
-            this.cacheService.setCache(HotPostsCacheKey, data);
+            this.cacheService.setCache(HotPostsCacheKey+"_"+body.pageSize+"_"+body.page, data);
             return data;
         });
     }
