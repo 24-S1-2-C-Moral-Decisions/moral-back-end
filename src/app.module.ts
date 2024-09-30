@@ -62,6 +62,8 @@ const envFilePath = '.env/.env'+'.'+(process.env.NODE_ENV == 'development' ? 'de
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RateLimiterMiddleware).forRoutes('/survey/answer');
+    if (process.env.NODE_ENV != 'development') {
+      consumer.apply(RateLimiterMiddleware).forRoutes('/survey/answer');
+    }
   }
 }
