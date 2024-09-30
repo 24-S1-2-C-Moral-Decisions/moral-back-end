@@ -19,9 +19,9 @@ export class RateLimiterMiddleware implements NestMiddleware {
             await this.rateLimiter.consume(req.ip);
             next();
         } catch (rejRes) {
-            Logger.log(`Current IP has sumbitted too many requests, alowed: ${this.rateLimiter.points}, request: ${rejRes.stack.consumedPoints}`, 'RateLimiterMiddleware');
-            Logger.warn(rejRes, rejRes.stack, 'RateLimiterMiddleware');
-            throw new BadRequestException(`Current IP has sumbitted too many requests, alowed: ${this.rateLimiter.points}, request: ${rejRes.stack.consumedPoints}`);
+            Logger.log(`Current IP ${req.ip} has sumbitted too many requests, alowed: ${this.rateLimiter.points}, request: ${rejRes.consumedPoints}`, 'RateLimiterMiddleware');
+            Logger.warn(rejRes, 'RateLimiterMiddleware');
+            throw new BadRequestException(`Current IP ${req.ip} has sumbitted too many requests, alowed: ${this.rateLimiter.points}, request: ${rejRes.consumedPoints}`);
         }
     }
 }
