@@ -1,0 +1,13 @@
+FROM node:20.11-slim
+
+# Create app directory
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+# Copy app source code
+COPY . .
+
+VOLUME /app
+CMD ["npm", "run", "migration:revert"]
