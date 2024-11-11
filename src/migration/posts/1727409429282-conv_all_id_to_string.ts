@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface } from "typeorm";
 import { MongoQueryRunner } from "typeorm/driver/mongodb/MongoQueryRunner";
 import { AllCollectionName, PostsDBName } from "../../utils/ConstantValue";
 
@@ -26,7 +26,8 @@ export class ConvID1727409429282 implements MigrationInterface {
         console.log("Process " + count + " documents")
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    public async down(queryRunner: MongoQueryRunner): Promise<void> {
+        queryRunner.databaseConnection.db(PostsDBName)
     }
 
 }
