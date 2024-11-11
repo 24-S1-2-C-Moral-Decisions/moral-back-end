@@ -2,7 +2,7 @@ import { DataSource } from "typeorm";
 import * as dotenv from "dotenv";
 import { DatabaseType, SurveyConnectionName, SurveyDBName } from "./src/utils/ConstantValue";
 
-dotenv.config({ path: __dirname + '/.env/.env' });
+dotenv.config({ path: __dirname + '/migration.env' });
 export const AppDataSource = new DataSource({
     type: DatabaseType,
     url: process.env.DATABASE_URL,
