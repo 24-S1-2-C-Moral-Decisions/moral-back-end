@@ -9,5 +9,4 @@ RUN npm install
 # Copy app source code
 COPY . .
 
-VOLUME /app
 CMD ["npm", "run", "migration:run"]
