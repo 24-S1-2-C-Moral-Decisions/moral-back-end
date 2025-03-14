@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "node_modules/next/dist/bin/next build",
+    "build": "next build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_OPTIONS='--max-old-space-size=5120' node_modules/next/dist/bin/next start",
     "start:dev": "NODE_OPTIONS='--max-old-space-size=5120' NODE_ENV=development nest start --watch",
