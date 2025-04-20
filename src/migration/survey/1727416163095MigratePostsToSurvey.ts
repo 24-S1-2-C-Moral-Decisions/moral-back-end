@@ -2,7 +2,7 @@ import { MigrationInterface, ObjectId } from "typeorm";
 import { MongoQueryRunner } from "typeorm/driver/mongodb/MongoQueryRunner";
 import { PostsDBName, SurveyDBName } from "../../utils/ConstantValue";
 import { Logger } from "@nestjs/common";
-import { Collection, Db, BulkWriteResult, Document as DocumentMongo } from "mongodb";
+import { Collection, Document as DocumentMongo } from "mongodb";
 
 export class MigratePostsToSurvey1727411111111 implements MigrationInterface {
   private readonly logger = new Logger(this.constructor.name);

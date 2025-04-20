@@ -1,7 +1,6 @@
 import { MigrationInterface, ObjectId } from "typeorm";
 import { PostsDBName, SurveyDBName } from "../../utils/ConstantValue";
 import { MongoQueryRunner } from "typeorm/driver/mongodb/MongoQueryRunner";
-import { Collection, Db } from "mongodb";
 import { Logger } from "@nestjs/common";
 
 export class AddCountColumnForQuestion1727316163095 implements MigrationInterface {
