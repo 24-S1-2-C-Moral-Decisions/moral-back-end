@@ -15,10 +15,10 @@ export class SurveyService {
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
 
-        const questions = await this.questionRepository.aggregate([
-            { $sort: { [`count.${studyId.studyId}`]: 1 } },
-            { $limit: 1 }
-        ]).toArray();
+        // const questions = await this.questionRepository.aggregate([
+        //     { $sort: { [`count.${studyId.studyId}`]: 1 } },
+        //     { $limit: 1 }
+        // ]).toArray();
 
         // const question = questions.length > 0 ? questions[0] : mockQuestion;
            const question = mockQuestion;

@@ -47,18 +47,6 @@ export class PostService {
             ids.push(documents[index].__key as unknown as string);
         }
 
-        const filteredDocuments = await Promise.all(
-            documents.map(async doc => {
-                const post = await this.postSummaryRepository.findOne({
-                    where: {
-                        id: String(doc.__key),
-                        commentCount: MoreThan(this.MIN_COMMENTS)
-                    }
-                });
-                return post ? doc : null;
-            })
-        ).then(docs => docs.filter(Boolean));
-
         const res = Promise.all(
             ids.map(async (id) => {
                 return this.postSummaryRepository.findOne({
