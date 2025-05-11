@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { Question } from '../entity/Question';
+import { Injectable, Logger } from '@nestjs/common';
+import { mockQuestion,Question } from '../entity/Question';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { Answer } from '../entity/Answer';
 import { ObjectId } from 'mongodb';
 import { SurveyConnectionName } from '../utils/ConstantValue';
 import { StudyIdDto } from '../module/survey/studyId.dto';
-
 @Injectable()
 export class SurveyService {
     constructor(
@@ -15,12 +14,16 @@ export class SurveyService {
     ) { }
 
     async findQuestion(studyId: StudyIdDto): Promise<Question> {
+
         const questions = await this.questionRepository.aggregate([
             { $sort: { [`count.${studyId.studyId}`]: 1 } },
             { $limit: 1 }
         ]).toArray();
 
-        const question = questions.length > 0 ? questions[0] : null;
+        // const question = questions.length > 0 ? questions[0] : mockQuestion;
+           const question = mockQuestion;
+        Logger.debug(`${question}, 11111111111111111111111`);
+
         if (studyId.studyId > 0 && Object.keys(question.count).length < studyId.studyId) {
             throw new Error('studyId out of range, should be [1, ' + Object.keys(question.count).length + ']');
         }

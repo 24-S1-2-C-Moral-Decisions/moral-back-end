@@ -91,7 +91,7 @@ export class SearchService {
                     worker.on('message', (message) => {
                         Logger.log(`Worker ${i + 1}: send  ${message.documents.length} document`, "SearchService");
                         for (const post of message.documents) {
-                            if (post.selftext === undefined) {
+                            if (post.selftext === undefined || post.commentCount <= 1000) {
                                 documentCount -= 1;
                                 continue;
                             }
