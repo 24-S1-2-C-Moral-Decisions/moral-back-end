@@ -3,10 +3,11 @@ import { PostConnectionName } from '../../utils/ConstantValue';
 import { PostSummary } from '../../entity/PostSummary';
 import { SearchService } from '../search/search.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class PostService {
+    private readonly MIN_COMMENTS = 1000;
     constructor(
         @InjectRepository(PostSummary, PostConnectionName) private postSummaryRepository: Repository<PostSummary>,
         private searchService: SearchService,
@@ -28,6 +29,9 @@ export class PostService {
 
     async getPostsOrderedByComments(pageSize: number = 10, page: number = 0): Promise<PostSummary[]> {
         return this.postSummaryRepository.find({
+            where: {
+                commentCount: MoreThan(this.MIN_COMMENTS)
+            },
             order: {
                 commentCount: "DESC"
             },
