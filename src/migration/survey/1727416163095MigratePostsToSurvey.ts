@@ -6,9 +6,9 @@ import { PostsDBName, SurveyDBName } from "../../utils/ConstantValue";
 export class MigratePostsToSurvey1727416163095 implements MigrationInterface {
   public async up(queryRunner: MongoQueryRunner): Promise<void> {
     const postDb = queryRunner.databaseConnection.db(PostsDBName);
-    const totalDocuments = await postDb.collection("posts").countDocuments();
+    const totalDocuments = await postDb.collection("all").countDocuments();
 
-    const numWorkers = parseInt(process.env.MIGRATION_WORKER_NUM ?? '8');
+    const numWorkers = parseInt(process.env.MIGRATION_WORKER_NUM ?? "8");
     const batchSize = Math.ceil(totalDocuments / numWorkers);
 
     const startTime = performance.now();
@@ -21,7 +21,7 @@ export class MigratePostsToSurvey1727416163095 implements MigrationInterface {
 
       workerPromises.push(
         new Promise((resolve, reject) => {
-          const worker = new Worker('./src/utils/posts-to-survey-worker.js', {
+          const worker = new Worker("./src/utils/posts-to-survey-worker.js", {
             workerData: {
               workerId: i,
               connectionUri: process.env.DATABASE_URL,
@@ -32,13 +32,15 @@ export class MigratePostsToSurvey1727416163095 implements MigrationInterface {
             },
           });
 
-          worker.on('message', (message) => {
-            console.log(`Worker ${i + 1}: inserted ${message.insertedCount} / ${batchSize} docs`);
+          worker.on("message", (message) => {
+            console.log(
+              `Worker ${i + 1}: inserted ${message.insertedCount} / ${batchSize} docs`
+            );
             totalInserted += message.insertedCount;
             resolve(null);
           });
 
-          worker.on('error', (err) => {
+          worker.on("error", (err) => {
             console.error(`Worker ${i + 1} failed`, err);
             reject(err);
           });
@@ -47,11 +49,15 @@ export class MigratePostsToSurvey1727416163095 implements MigrationInterface {
     }
 
     await Promise.all(workerPromises);
-    console.log(`✅ Done. Inserted ${totalInserted} documents in ${performance.now() - startTime} ms`);
+    console.log(
+      `✅ Done. Inserted ${totalInserted} documents in ${performance.now() - startTime} ms`
+    );
   }
 
   public async down(queryRunner: MongoQueryRunner): Promise<void> {
-    await queryRunner.databaseConnection.db(SurveyDBName).dropCollection("posts");
+    await queryRunner.databaseConnection
+      .db(SurveyDBName)
+      .dropCollection("posts");
     console.log("🧹 Dropped survey.posts collection");
   }
 }
