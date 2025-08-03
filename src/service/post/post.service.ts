@@ -3,7 +3,7 @@ import { PostConnectionName } from "../../utils/ConstantValue";
 import { PostSummary } from "../../entity/PostSummary";
 import { SearchService } from "../search/search.service";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MoreThan, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class PostService {
