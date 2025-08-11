@@ -118,4 +118,26 @@ export class PostService {
 
     return res;
   }
+
+  async getPostById(id: string): Promise<PostSummary | null> {
+    try {
+      console.log(`🔍 PostService: 查询帖子ID: ${id}`);
+      const post = await this.postSummaryRepository.findOne({
+        where: { id: id },
+      });
+
+      if (post) {
+        console.log(
+          `📊 PostService: 找到帖子 - ID: ${post.id}, 标题: ${post.title}`
+        );
+      } else {
+        console.log(`❌ PostService: 未找到帖子ID: ${id}`);
+      }
+
+      return post;
+    } catch (error) {
+      console.error(`❌ PostService: 查询帖子ID ${id} 时出错:`, error);
+      throw error;
+    }
+  }
 }
