@@ -1,8 +1,10 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { Controller, Get, Query, Param, HttpException, HttpStatus } from "@nestjs/common";
 import { PostService } from "../../service/post/post.service";
 import { ApiProperty, ApiTags } from "@nestjs/swagger";
 import { CacheService } from "../../service/cache/cache.service";
 import { Type } from "class-transformer";
+import { ApiOkResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiInternalServerErrorResponse } from "@nestjs/swagger";
+import { PostSummary } from "../../entity/PostSummary";
 
 const HotPostsCacheKey = "hotPosts";
 
@@ -77,6 +79,83 @@ export class PostController {
       data
     );
     return data;
+  }
+
+  @Get(":id")
+  @ApiTags("post")
+  @ApiOkResponse({
+    description: "成功获取帖子详情",
+    type: PostSummary,
+    schema: {
+      example: {
+        id: "123",
+        title: "帖子标题",
+        selftext: "帖子内容",
+        verdict: "YTA",
+        YTA: 150,
+        NTA: 50,
+        commentCount: 200,
+        topics: ["道德", "生活"]
+      }
+    }
+  })
+  @ApiBadRequestResponse({ 
+    description: "无效的帖子ID",
+    schema: {
+      example: {
+        status: 400,
+        error: "无效的帖子ID",
+        message: "帖子ID格式不正确"
+      }
+    }
+  })
+  @ApiNotFoundResponse({ 
+    description: "帖子不存在",
+    schema: {
+      example: {
+        status: 404,
+        error: "帖子不存在",
+        message: "未找到ID为 123 的帖子"
+      }
+    }
+  })
+  @ApiInternalServerErrorResponse({ 
+    description: "服务器内部错误",
+    schema: {
+      example: {
+        status: 500,
+        error: "服务器内部错误",
+        message: "数据库查询失败"
+      }
+    }
+  })
+  async getPostById(@Param("id") id: string) {
+    try {
+      const post = await this.postService.getPostById(id);
+      if (!post) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: "帖子不存在",
+            message: `未找到ID为 ${id} 的帖子`
+          },
+          HttpStatus.NOT_FOUND
+        );
+      }
+      return post;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: "服务器内部错误",
+          message: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   @ApiTags("cache")
