@@ -6,7 +6,7 @@ You can create your own database and set up the configuration in the file.
 
 example of `.database.env` file:
 ```env
-DATABASE_CONN_STRING=mongodb://127.0.0.1:27017/testdb
+DATABASE_CONN_STRING=mongodb://<host>:27017/testdb
 ```
 
 ## In Docker

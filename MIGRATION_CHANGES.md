@@ -179,9 +179,8 @@ async getPostsOrderedByComments(pageSize: number = 10, page: number = 0): Promis
 #### 3. **清除缓存**
 
 ```bash
-curl -X GET "http://localhost:3001/post/clearCache"
+curl -X GET "http://<host>:3001/post/clearCache"
 ```
-
 ### 验证结果
 
 #### 数据库状态
@@ -194,11 +193,11 @@ curl -X GET "http://localhost:3001/post/clearCache"
 
 ```bash
 # ALL posts API - 正常工作
-curl -X GET "http://localhost:3001/search?topic=all&pageSize=5&page=0"
+curl -X GET "http://<host>:3001/search?topic=all&pageSize=5&page=0"
 # 返回5个帖子，评论数分别为：2870, 1518, 1510, 1871, 1327
 
 # Hot posts API - 修复后正常工作
-curl -X GET "http://localhost:3001/post/hotPosts?pageSize=5&page=0"
+curl -X GET "http://<host>:3001/post/hotPosts?pageSize=5&page=0"
 # 返回5个热门帖子，评论数分别为：12533, 11236, 9699, 9481, 9213
 ```
 
